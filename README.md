@@ -18,6 +18,12 @@ ship-from address, carrier accounts — is configured on the app's Settings scre
 
 ## Requirements
 
+> **Bring your own carrier API keys.** The app doesn't include any UPS or FedEx credentials. Each
+> shop needs its own free developer account with UPS (and with FedEx, if it ships FedEx), creates an
+> app or project there to get its own Client ID and Client Secret, and links its own shipping account
+> number to it. New keys start in the carriers' test environments (UPS *CIE*, FedEx *Sandbox*);
+> moving to live shipping may require extra approval steps on the carrier's side.
+
 - Windows 11 (x64). Windows 10 may work but is untested.
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) to build. Running a published exe
   needs nothing installed.
@@ -66,13 +72,28 @@ Use the carriers' test environments (UPS *Cie*, FedEx *Sandbox*) until everythin
 labels cost real money. Printavo has no sandbox, so test against an order you don't mind writing
 tracking notes and tasks to.
 
+## Labels and printers
+
+| Label | Format received from the carrier | Saved for reprints as |
+|---|---|---|
+| UPS shipping label | GIF image | `.gif` |
+| FedEx shipping label | PDF, 4x6 | `.pdf` |
+| Pick-up box label | Drawn by the app | Not saved (reprint from the order) |
+
+Labels print through the regular Windows printer driver as an image — at 4x6 on a label printer, or
+at true size centered on 8.5x11 paper on an office printer.
+
+**The app does not produce or send ZPL or EPL.** Any printer with a Windows driver works, including
+thermal label printers that install one. A printer that only accepts raw ZPL/EPL commands, with no
+Windows driver, isn't supported.
+
 ## Where data lives
 
 Everything is stored per Windows user under `%LocalAppData%\PrintavoShipper\`:
 
 - `printavoshipper.db` — SQLite database: settings, contractors, shipment history. API secrets are
   encrypted with Windows DPAPI, so they only decrypt for the same Windows user on the same PC.
-- `Labels\` — saved label files, for reprints.
+- `Labels\` — saved label files (`.gif` for UPS, `.pdf` for FedEx), for reprints.
 - `Archive\` — older shipments exported from history.
 - `logs\` — daily log files.
 

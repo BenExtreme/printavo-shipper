@@ -151,6 +151,15 @@
   when you're done.
 </p>
 
+<div class="callout warn">
+  <strong>Bring your own UPS and FedEx API keys.</strong> The app doesn't come with any carrier
+  credentials. Before setup, sign up for your own free developer account at the
+  <strong>UPS Developer Portal</strong> (developer.ups.com) — and the <strong>FedEx Developer Portal</strong>
+  (developer.fedex.com) if you ship FedEx — create an app/project there to get a Client ID and Client
+  Secret, and link your shipping account number to it. New keys start in the carrier's test environment;
+  switching to live shipping may require extra approval steps with the carrier.
+</div>
+
 <h3>Connections</h3>
 <table>
   <tr><th style="width:150px">Card</th><th>What to enter</th></tr>
@@ -234,6 +243,14 @@
     <td>How often old, finished shipments are exported to a backup file and cleared out of History.</td>
   </tr>
 </table>
+
+<div class="callout">
+  <strong>Label formats and printers.</strong> UPS sends labels as GIF images and FedEx as 4x6 PDFs; the app
+  keeps a copy of each for reprints. Labels print through the normal Windows printer driver as an image —
+  at 4x6 on a label printer, or at true size centered on a letter sheet. The app does <strong>not</strong>
+  produce ZPL or EPL printer code, so your printer needs a Windows driver (most thermal label printers
+  have one); a printer that only accepts raw ZPL/EPL commands won't work.
+</div>
 
 <h2 class="section-break"><span class="num">2.</span>Shipping an order</h2>
 
