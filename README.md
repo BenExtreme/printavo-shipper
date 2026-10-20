@@ -23,6 +23,11 @@ ship-from address, carrier accounts — is configured on the app's Settings scre
 > app or project there to get its own Client ID and Client Secret, and links its own shipping account
 > number to it. New keys start in the carriers' test environments (UPS *CIE*, FedEx *Sandbox*);
 > moving to live shipping may require extra approval steps on the carrier's side.
+>
+> **FedEx label certification:** to get a FedEx developer project approved for live shipping, you
+> submit scans of printed sample labels. This app produces FedEx labels as PDF images, and FedEx only
+> accepts thermal-printed labels in ZPL or EPL format — so print the certification labels on a
+> **laser printer** (Settings > Label Printer > Label paper: `Letter8x11Centered`), not a thermal printer.
 
 - Windows 11 (x64). Windows 10 may work but is untested.
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) to build. Running a published exe
