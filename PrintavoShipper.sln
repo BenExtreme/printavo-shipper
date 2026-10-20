@@ -1,0 +1,64 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D30C4C2F-03A1-4137-B460-83E5BD731B88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrintavoShipper.App", "src\PrintavoShipper.App\PrintavoShipper.App.csproj", "{5C21A88C-7BCD-4613-B993-547C232FEFC0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrintavoShipper.Core", "src\PrintavoShipper.Core\PrintavoShipper.Core.csproj", "{DDE6D7F8-F137-4D45-A288-66BD8210AFEE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrintavoShipper.Printavo", "src\PrintavoShipper.Printavo\PrintavoShipper.Printavo.csproj", "{F4438EEA-88F1-4885-B6C1-BFE59AE53A25}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrintavoShipper.Ups", "src\PrintavoShipper.Ups\PrintavoShipper.Ups.csproj", "{05F8A12D-4EB7-4932-91D9-61485924EC72}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F89170B7-6937-4404-BEC6-194A85AF149C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrintavoShipper.Tests", "tests\PrintavoShipper.Tests\PrintavoShipper.Tests.csproj", "{9D846762-CD95-4C42-A1EB-A5DEC5257A18}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrintavoShipper.FedEx", "src\PrintavoShipper.FedEx\PrintavoShipper.FedEx.csproj", "{7DAED321-272E-40B2-9E90-BA409E903BCA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5C21A88C-7BCD-4613-B993-547C232FEFC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C21A88C-7BCD-4613-B993-547C232FEFC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C21A88C-7BCD-4613-B993-547C232FEFC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C21A88C-7BCD-4613-B993-547C232FEFC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDE6D7F8-F137-4D45-A288-66BD8210AFEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDE6D7F8-F137-4D45-A288-66BD8210AFEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDE6D7F8-F137-4D45-A288-66BD8210AFEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDE6D7F8-F137-4D45-A288-66BD8210AFEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4438EEA-88F1-4885-B6C1-BFE59AE53A25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4438EEA-88F1-4885-B6C1-BFE59AE53A25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4438EEA-88F1-4885-B6C1-BFE59AE53A25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4438EEA-88F1-4885-B6C1-BFE59AE53A25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05F8A12D-4EB7-4932-91D9-61485924EC72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05F8A12D-4EB7-4932-91D9-61485924EC72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05F8A12D-4EB7-4932-91D9-61485924EC72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05F8A12D-4EB7-4932-91D9-61485924EC72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D846762-CD95-4C42-A1EB-A5DEC5257A18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D846762-CD95-4C42-A1EB-A5DEC5257A18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D846762-CD95-4C42-A1EB-A5DEC5257A18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D846762-CD95-4C42-A1EB-A5DEC5257A18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DAED321-272E-40B2-9E90-BA409E903BCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DAED321-272E-40B2-9E90-BA409E903BCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DAED321-272E-40B2-9E90-BA409E903BCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DAED321-272E-40B2-9E90-BA409E903BCA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5C21A88C-7BCD-4613-B993-547C232FEFC0} = {D30C4C2F-03A1-4137-B460-83E5BD731B88}
+		{DDE6D7F8-F137-4D45-A288-66BD8210AFEE} = {D30C4C2F-03A1-4137-B460-83E5BD731B88}
+		{F4438EEA-88F1-4885-B6C1-BFE59AE53A25} = {D30C4C2F-03A1-4137-B460-83E5BD731B88}
+		{05F8A12D-4EB7-4932-91D9-61485924EC72} = {D30C4C2F-03A1-4137-B460-83E5BD731B88}
+		{9D846762-CD95-4C42-A1EB-A5DEC5257A18} = {F89170B7-6937-4404-BEC6-194A85AF149C}
+		{7DAED321-272E-40B2-9E90-BA409E903BCA} = {D30C4C2F-03A1-4137-B460-83E5BD731B88}
+	EndGlobalSection
+EndGlobal

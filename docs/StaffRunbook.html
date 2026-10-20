@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Printavo Shipper — Staff Guide</title>
+<style>
+  @page { size: Letter; margin: 0.65in; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", Calibri, Arial, sans-serif;
+    color: #1a1a1a;
+    font-size: 10.5pt;
+    line-height: 1.45;
+    margin: 0;
+  }
+  header.doc-header {
+    border-bottom: 3px solid #1F2933;
+    padding-bottom: 10px;
+    margin-bottom: 18px;
+  }
+  header.doc-header h1 {
+    margin: 0 0 2px 0;
+    font-size: 20pt;
+    color: #1F2933;
+  }
+  header.doc-header p {
+    margin: 0;
+    color: #556;
+    font-size: 10pt;
+  }
+  h2 {
+    font-size: 13pt;
+    color: #1F2933;
+    border-bottom: 1px solid #CCD5DC;
+    padding-bottom: 3px;
+    margin-top: 22px;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+  }
+  h2 .num {
+    display: inline-block;
+    width: 22px;
+    color: #2E7D32;
+  }
+  h3 {
+    font-size: 10.5pt;
+    margin: 12px 0 4px 0;
+    color: #333;
+    page-break-after: avoid;
+  }
+  p { margin: 4px 0 8px 0; }
+  ol, ul { margin: 4px 0 10px 0; padding-left: 22px; }
+  li { margin-bottom: 3px; }
+  .callout {
+    background: #F5F7F9;
+    border-left: 3px solid #1F2933;
+    padding: 8px 12px;
+    margin: 8px 0;
+    font-size: 10pt;
+  }
+  .callout.warn {
+    background: #FFF9E8;
+    border-left-color: #B8860B;
+  }
+  .callout.tip {
+    background: #EAF7EE;
+    border-left-color: #2E7D32;
+  }
+  .label {
+    font-family: Consolas, "Courier New", monospace;
+    background: #EEF1F4;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 9.5pt;
+    white-space: nowrap;
+  }
+  .btn {
+    font-family: Consolas, "Courier New", monospace;
+    background: #E4E7EB;
+    border: 1px solid #AAB2BD;
+    border-radius: 3px;
+    padding: 1px 6px;
+    font-size: 9.5pt;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 6px 0 12px 0;
+    font-size: 9.8pt;
+  }
+  table th, table td {
+    border: 1px solid #CCD5DC;
+    padding: 4px 7px;
+    text-align: left;
+    vertical-align: top;
+  }
+  table th {
+    background: #F5F7F9;
+    color: #1F2933;
+  }
+  .section-break { page-break-before: always; }
+  .callout, tr { page-break-inside: avoid; }
+  footer {
+    margin-top: 24px;
+    padding-top: 8px;
+    border-top: 1px solid #CCD5DC;
+    font-size: 8.5pt;
+    color: #778;
+  }
+  .toc {
+    background: #F5F7F9;
+    border-radius: 4px;
+    padding: 12px 18px;
+    margin-bottom: 4px;
+  }
+  .toc h2 { border: none; margin-top: 0; }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc li { margin-bottom: 2px; }
+</style>
+</head>
+<body>
+
+<header class="doc-header">
+  <h1>Printavo Shipper — Staff Guide</h1>
+  <p>Turning a completed Printavo order into a printed UPS or FedEx label</p>
+</header>
+
+<div class="toc">
+  <h2>In this guide</h2>
+  <ol>
+    <li>First-time setup (done once, by whoever installs the app)</li>
+    <li>Shipping an order (the main workflow)</li>
+    <li>Direct customers vs. Contractors</li>
+    <li>Orders with more than one ship-to address</li>
+    <li>Pick-up orders: box labels &amp; status</li>
+    <li>UPS Email Notifications (Quantum View)</li>
+    <li>One-off shipments (New Shipment)</li>
+    <li>After you ship: reprints, voids, and fixing a failed sync</li>
+    <li>Setting up a new Contractor</li>
+    <li>Keyboard shortcuts</li>
+    <li>Troubleshooting quick reference</li>
+  </ol>
+</div>
+
+<h2><span class="num">1.</span>First-time setup</h2>
+<p>
+  Printavo Shipper is a single <span class="label">Printavo Shipper.exe</span> file — no installer, and
+  nothing else to install on a Windows 11 PC. Its settings live on that PC under the Windows user who
+  runs it, so set it up while signed in as the account staff will use. Everything below is on the
+  <span class="btn">Settings</span> screen; click <span class="btn">Save Settings</span> at the bottom
+  when you're done.
+</p>
+
+<h3>Connections</h3>
+<table>
+  <tr><th style="width:150px">Card</th><th>What to enter</th></tr>
+  <tr>
+    <td><strong>Printavo</strong></td>
+    <td>Your Printavo login email and API token (from your Printavo account settings). Click
+        <span class="btn">Test Printavo Connection</span> — it shows who you're signed in as.</td>
+  </tr>
+  <tr>
+    <td><strong>UPS</strong></td>
+    <td>The Client ID and Client Secret from your app on the UPS Developer Portal. Leave
+        <span class="label">Environment</span> on <span class="label">Cie</span> (UPS's test system — labels
+        aren't real and cost nothing) until you're ready, then switch to
+        <span class="label">Production</span>. Click <span class="btn">Test UPS Connection</span>.</td>
+  </tr>
+  <tr>
+    <td><strong>Our UPS Accounts</strong></td>
+    <td>Add at least one of your own UPS account numbers (with its zip). Mark one as Default. If you add
+        several, <span class="btn">Get Rates</span> compares them all.</td>
+  </tr>
+  <tr>
+    <td><strong>FedEx</strong> (optional)</td>
+    <td>Only needed if you ship FedEx. The Client ID and Client Secret from your FedEx Developer Portal
+        project, the account number tied to that project, and the environment
+        (<span class="label">Sandbox</span> for testing, then <span class="label">Production</span>). Click
+        <span class="btn">Test FedEx Connection</span>.</td>
+  </tr>
+  <tr>
+    <td><strong>Our FedEx Accounts</strong></td>
+    <td>If you ship FedEx, add at least one of your own FedEx account numbers.</td>
+  </tr>
+</table>
+<div class="callout warn">
+  <strong>Your own carrier account is always required.</strong> UPS and FedEx both need one of your own
+  accounts as the shipper — even when a customer's third-party account pays for the shipment. Until one
+  is added, shipment cards show a yellow warning and the Ship button stays disabled.
+</div>
+
+<h3>Your shop</h3>
+<table>
+  <tr><th style="width:150px">Card</th><th>What to enter</th></tr>
+  <tr>
+    <td><strong>Printavo Workflow</strong></td>
+    <td>
+      Loads your Printavo account's own statuses and users (click
+      <span class="btn">Reload from Printavo</span> if you change them in Printavo).
+      <ul>
+        <li><strong>Order statuses</strong> — tick <em>Shipping</em> for the statuses staff should be able to
+            set on shipped orders, <em>Pick-up</em> for pick-up orders, and <em>Hide</em> for statuses that
+            should never appear in the Orders list (quotes, already shipped, on hold…).</li>
+        <li><strong>Delivery methods</strong> — your Printavo delivery method names, comma-separated, for
+            each of UPS, FedEx, and Pick-up. An order whose delivery method isn't listed ships via UPS
+            with a warning.</li>
+        <li><strong>Staff</strong> — tick the people who should appear in the order screen's
+            <em>Add Task</em> list and the UPS <em>also notify on delivery</em> list. Their email starts as
+            their Printavo login; change it if they read a different inbox, or clear it to leave them out
+            of notifications.</li>
+        <li><strong>Shipping-cost tasks assigned to</strong> — who gets the Printavo task recording the cost
+            of shipments billed to your own account: a fixed person, the order's owner, or nobody.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Default Ship-From Address</strong></td>
+    <td>Your shop's name, address, and phone. Direct customers' orders ship from here, and all rates are
+        quoted from here.</td>
+  </tr>
+  <tr>
+    <td><strong>Shipping Defaults</strong></td>
+    <td>Your standard box sizes (the first one is the starting size for each new package), and the markup
+        added to your negotiated rate when charging shipping on an invoice (Section 2).</td>
+  </tr>
+  <tr>
+    <td><strong>Label Printer</strong></td>
+    <td>The Windows printer for labels, and the paper: 4x6 label stock on a label printer, or plain 8.5x11
+        paper on an office printer. Click <span class="btn">Print Test Label</span>. Also choose the logo
+        printed on pick-up box labels (Section 5).</td>
+  </tr>
+  <tr>
+    <td><strong>Shipment History</strong></td>
+    <td>How often old, finished shipments are exported to a backup file and cleared out of History.</td>
+  </tr>
+</table>
+
+<h2 class="section-break"><span class="num">2.</span>Shipping an order</h2>
+
+<ol>
+  <li>Click <span class="btn">Orders</span> in the left nav. Either type the order number into
+      <span class="label">Order #</span> and press Enter, or use <span class="label">Search</span> to
+      browse/filter, then click <span class="btn">Open</span> next to the right order.</li>
+  <li>The order screen shows the <strong>Production Note</strong> and <strong>Customer Note</strong>
+      straight from Printavo — always read these before shipping, they carry any special
+      instructions for that order.</li>
+  <li>Under <strong>Ship-To Address</strong>, click <span class="btn">Ship this address</span> next to
+      the address you're shipping to. This opens a shipment card below. The order's Printavo delivery
+      method decides whether it's a UPS or a FedEx card.</li>
+  <li>On the shipment card, check/set:
+    <ul>
+      <li><strong>Ship From</strong> — who the package is shipping from (see Section 3).</li>
+      <li><strong>Our UPS/FedEx Account</strong> and <strong>Service Level</strong> — which of your own
+          accounts the label goes out under, and the service (Ground, etc.).</li>
+      <li><strong>Bill To</strong> — leave unchecked to bill your own account, or check
+          <em>"Bill third-party … account"</em> if this customer pays for their own shipping. Cards start
+          on third-party billing only when the contractor has a saved billing account for that
+          carrier.</li>
+      <li><strong>Packages</strong> — pick a box size preset or type in your own weight/dimensions. Use
+          <span class="btn">Clone</span> to duplicate a row for identical boxes, or
+          <span class="btn">+ Add Package</span> for a new one.</li>
+      <li><strong>Notes</strong> (optional) — e.g. <em>DESIGN 1 &amp; DESIGN 2</em>; shown after the
+          tracking number in the customer note.</li>
+    </ul>
+  </li>
+  <li>Click <span class="btn">Get Rates</span> to see costs — click any quote to apply that service
+      level/account to the card (the applied quote stays highlighted). <strong>This is required when
+      billing your own account</strong>: the quoted cost is what gets recorded in Shipment History and the
+      Printavo task. If you change anything afterward (boxes, weights, dimensions, the address, or
+      billing), click <span class="btn">Get Rates</span> again. It's optional for third-party billing.</li>
+  <li>Click <span class="btn">Ship &amp; Print Label</span> (or press <span class="label">Ctrl+Enter</span>
+      while the shipment card has focus). This purchases the real label, prints it (or saves it if no
+      printer is selected — see Section 11), and updates the Printavo order automatically (see the
+      green result panel).</li>
+</ol>
+
+<div class="callout">
+  If <span class="btn">Ship &amp; Print Label</span> is grayed out, the app tells you why right under
+  the button (e.g. no rates fetched yet, or a package without a weight) — fix whatever it names and the
+  button re-enables.
+</div>
+
+<div class="callout tip">
+  <strong>Charging the customer for shipping (UPS).</strong> When billing your own UPS account, check
+  <em>"Add Shipping Cost To Invoice"</em> to add a <strong>Shipping</strong> line (not taxable) to the
+  order's Printavo invoice when the label is created. Pick which rate to charge:
+  <ul>
+    <li><strong>Negotiated Rate</strong>: your negotiated UPS cost plus the markup set in
+        <em>Settings &rarr; Shipping Defaults</em>.</li>
+    <li><strong>Published Rate</strong>: UPS's published (list) rate. If that's no higher than your
+        negotiated cost, it charges negotiated + markup instead.</li>
+  </ul>
+  The exact amount shows under the options once you click <span class="btn">Get Rates</span>.
+  Voiding the shipment removes the Shipping line from the invoice again. The option is hidden for
+  third-party billing, since that customer already pays UPS directly.
+</div>
+
+<div class="callout tip">
+  <strong>Costs are always as if shipped from your shop.</strong> Rates are quoted from the Default
+  Ship-From Address in Settings, even when the label's return address is a contractor's — the boxes
+  physically leave your shop, so that's the cost tracked.
+</div>
+
+<div class="callout tip">
+  <strong>Reference numbers and the customer note are automatic.</strong> The order's PO # and
+  invoice # are sent to the carrier as reference numbers on the label with no extra steps, and a bullet
+  like <em>"UPS GROUND: 1Z…"</em> is added to the top of the Printavo customer note the moment the label
+  is created — no need to type tracking numbers into Printavo by hand. Shipments billed to your own
+  account also add a Printavo task recording the cost.
+</div>
+
+<h3>Updating the order's Printavo status</h3>
+<p>
+  The <strong>Printavo</strong> panel on the right of the order screen has a <strong>Status</strong>
+  picker with the statuses chosen in Settings. Pick one and click <span class="btn">Update</span>. The
+  same panel has <strong>Add Task</strong> for leaving a Printavo task on the order for one of your staff
+  (e.g. an overage or shortage).
+</p>
+
+<h3>If the address won't validate</h3>
+<p>
+  A status line under the ship-to address shows whether the carrier recognizes it. If it says it
+  couldn't verify the address, double-check it's correct before shipping — you can still ship
+  either way. If Printavo's address on file is flat-out wrong (missing street, wrong city, etc.),
+  click <span class="btn">Edit Address</span> next to the ship-to summary to correct it for this
+  shipment. This only affects the shipment you're creating — it does not change the order in Printavo.
+</p>
+
+<h2><span class="num">3.</span>Direct customers vs. Contractors</h2>
+<p>
+  Every order belongs to a Printavo customer, but the app treats them one of two ways:
+</p>
+<table>
+  <tr><th style="width:130px">Type</th><th>What it means</th><th>Ships from</th></tr>
+  <tr>
+    <td><strong>Direct customer</strong> (default)</td>
+    <td>Nothing has been set up for this customer — most walk-in/one-off customers.</td>
+    <td>Your shop's Default Ship-From Address automatically.</td>
+  </tr>
+  <tr>
+    <td><strong>Contractor</strong></td>
+    <td>A reseller/business account someone has explicitly imported and configured (see
+        Section 9) — e.g. another shop you produce for.</td>
+    <td>That contractor's own saved ship-from address (and optionally their own UPS/FedEx billing
+        accounts).</td>
+  </tr>
+</table>
+<div class="callout">
+  A customer is <em>never</em> automatically turned into a Contractor just by opening their order —
+  it only happens through the deliberate "Import from Printavo" step on the Contractors screen. If a
+  Contractor is archived, their orders fall back to shipping as a Direct customer until they're
+  unarchived.
+</div>
+
+<h2><span class="num">4.</span>Orders with more than one ship-to address</h2>
+<p>
+  If an order has additional addresses on it (a split-ship order), they appear under
+  <strong>Additional Ship-To Addresses</strong> below the default one — each with its own
+  <span class="btn">Ship this address</span> button. Click it for each destination to create a
+  separate shipment card (and a separate label) per address.
+</p>
+<p>
+  When an order has multiple ship-to addresses, the customer note lines are automatically labeled so
+  they're easy to tell apart, e.g.:
+</p>
+<div class="callout">
+  <span class="label">SMITH ST - UPS GROUND: 1Z...</span><br>
+  <span class="label">MONTAGUE ST - UPS GROUND: 1Z...</span>
+</div>
+
+<h2><span class="num">5.</span>Pick-up orders: box labels &amp; status</h2>
+<p>
+  Orders whose delivery method is one of your Pick-up methods (Settings &rarr; Printavo Workflow) show up
+  in the <span class="btn">Orders</span> list like any other order (check the <strong>Delivery</strong>
+  column). They don't get a shipping label, so opening one shows a <strong>Box Labels</strong> card
+  instead of ship-to addresses.
+</p>
+<ol>
+  <li>Type the number of boxes into <span class="label">Number of boxes</span>.</li>
+  <li>Click <span class="btn">Print Box Labels</span>. One label prints per box, numbered automatically:
+      <em>"Box 1 of 3"</em>, <em>"Box 2 of 3"</em>, <em>"Box 3 of 3"</em>.</li>
+  <li>Set the Printavo <strong>Status</strong> (right side) to one of your pick-up statuses and click
+      <span class="btn">Update</span>.</li>
+</ol>
+<div class="callout tip">
+  <strong>Whose logo prints?</strong> If the order has a contractor profile in Printavo, the label carries
+  that contractor's logo and phone number, pulled straight from Printavo — the same ones Printavo's own
+  box label uses. Otherwise it carries your shop's logo, set once under <span class="btn">Settings</span>
+  &rarr; Label Printer &rarr; <em>Box label logo</em>. Shop-branded labels also print the customer's name
+  in large white-on-black letters, so the boxes can be spotted on the pick-up shelf from across the room.
+  The Box Labels card shows which logo it will use before you print.
+</div>
+
+<h2><span class="num">6.</span>UPS Email Notifications (Quantum View)</h2>
+<p>
+  Each UPS shipment card has a <strong>UPS Email Notifications</strong> checkbox — off by default.
+  Turning it on reveals:
+</p>
+<ul>
+  <li><strong>Notify (pickup + delivery)</strong> — the primary email, pre-filled from the order's
+      contact if Printavo has one on file. Gets notified when UPS picks up and when it's delivered.</li>
+  <li><strong>Also notify on delivery only</strong> — an optional dropdown of your staff (Settings &rarr;
+      Printavo Workflow &rarr; Staff). Pick a name (or leave it on "(none)") to also notify that person only
+      when the package is <em>delivered</em>. On the order screen this starts on the order's owner in
+      Printavo, if they're on the staff list; change it or set it to "(none)" per shipment.</li>
+</ul>
+
+<h2><span class="num">7.</span>One-off shipments (New Shipment)</h2>
+<p>
+  For a package that doesn't come from a Printavo order's address — samples, returns, a replacement
+  part — click <span class="btn">New Shipment</span> in the left nav. Type the ship-to address, pick
+  <strong>UPS</strong> or <strong>FedEx</strong>, and click <span class="btn">Add Shipment</span>; the
+  shipment card works exactly like the one on an order.
+</p>
+<p>
+  Optionally link it to a Printavo order by number. A linked shipment records its tracking number and
+  cost as a single Printavo task on that order, instead of a customer-note line.
+</p>
+
+<h2><span class="num">8.</span>After you ship: reprints, voids, and fixing a failed sync</h2>
+<p>
+  Every shipment you've created lives on the <span class="btn">History</span> screen — search by
+  order #, tracking #, or ship-to company name. Each row has:
+</p>
+<ul>
+  <li><strong>Open Order</strong> — jump straight back to that order.</li>
+  <li><strong>Reprint</strong> — reprints the saved label to the currently selected printer.</li>
+  <li><strong>Void</strong> — cancels the shipment with the carrier (only shown while it's still
+      voidable), and removes its Shipping line from the Printavo invoice if one was added.</li>
+  <li><strong>Retry Sync</strong> — only appears if the Printavo write-back (the cost-tracking task,
+      the customer note, and/or the invoice Shipping line) didn't fully go through after shipping, e.g.
+      because of a brief internet hiccup. Click it to try again.</li>
+</ul>
+<div class="callout tip">
+  Check the <strong>"Needs Printavo sync only"</strong> box on the History screen every so often to
+  sweep for anything that silently failed to sync back to Printavo.
+</div>
+<div class="callout">
+  <strong>Void</strong> and <strong>Remove</strong> (on an unshipped card back on the order screen) both
+  ask you to confirm before doing anything — a safeguard against an accidental click, not a sign
+  something's wrong.
+</div>
+
+<h2><span class="num">9.</span>Setting up a new Contractor</h2>
+<ol>
+  <li>Go to <span class="btn">Contractors</span> and open the <strong>Import from Printavo</strong>
+      section.</li>
+  <li>Search for the company name and click <span class="btn">Add</span> next to the right one.</li>
+  <li>Select them in the list. Add at least one <strong>ship-from address</strong> (their own shipping
+      address — mark one as Default). If they pay for their own shipping, add their account under
+      <strong>Third-Party Billing Accounts</strong> (UPS: account number + zip) and/or
+      <strong>FedEx Billing Accounts</strong>.</li>
+  <li>From then on, any of their orders will default to shipping from their address, billed to their
+      account if one is saved.</li>
+</ol>
+<p>
+  To temporarily stop treating someone as a contractor (without losing their setup), select them and
+  click <span class="btn">Archive</span> — their orders fall back to Direct-customer shipping until
+  you <span class="btn">Unarchive</span> them.
+</p>
+<div class="callout">
+  Deleting a ship-from address or billing account asks you to confirm first. If the one you delete was
+  the contractor's default, another one is automatically promoted to Default.
+</div>
+
+<h2><span class="num">10.</span>Keyboard shortcuts</h2>
+<p>The app follows your Windows light/dark setting automatically, and a few shortcuts speed up common moves:</p>
+<table>
+  <tr><th style="width:180px">Shortcut</th><th>Does what</th></tr>
+  <tr><td><span class="label">Ctrl+1</span></td><td>Jump to Orders</td></tr>
+  <tr><td><span class="label">Ctrl+2</span></td><td>Jump to Contractors</td></tr>
+  <tr><td><span class="label">Ctrl+3</span></td><td>Jump to History</td></tr>
+  <tr><td><span class="label">Ctrl+4</span></td><td>Jump to Settings</td></tr>
+  <tr><td><span class="label">Ctrl+5</span></td><td>Jump to New Shipment</td></tr>
+  <tr><td><span class="label">Alt+Left</span></td><td>Back to the previous screen</td></tr>
+  <tr><td><span class="label">Ctrl+Enter</span></td><td>Ship &amp; Print Label, while a shipment card has focus</td></tr>
+</table>
+
+<h2><span class="num">11.</span>Troubleshooting quick reference</h2>
+<table>
+  <tr><th style="width:230px">You see…</th><th>What it means / what to do</th></tr>
+  <tr>
+    <td>"Add your own UPS/FedEx account before shipping."</td>
+    <td>No account of your own is set up for that carrier. Add one under
+        <span class="btn">Settings</span> &rarr; Our UPS Accounts / Our FedEx Accounts, then reopen the
+        order.</td>
+  </tr>
+  <tr>
+    <td>"No shop ship-from address"</td>
+    <td>Fill in <span class="btn">Settings</span> &rarr; Default Ship-From Address. The carrier rejects
+        labels without one.</td>
+  </tr>
+  <tr>
+    <td>"Unrecognized delivery method"</td>
+    <td>The order's Printavo delivery method isn't in Settings &rarr; Printavo Workflow &rarr; Delivery
+        methods, so it's defaulting to UPS. Fix the order in Printavo, or add the name in Settings.</td>
+  </tr>
+  <tr>
+    <td>The status picker or Add Task list is empty</td>
+    <td>Nothing is ticked yet under Settings &rarr; Printavo Workflow (Order statuses / Staff).</td>
+  </tr>
+  <tr>
+    <td>"No printer selected in Settings — labels were saved but not printed."</td>
+    <td>Go to <span class="btn">Settings</span> and pick a printer under Label Printer. The shipment still
+        went through and the label is saved — reprint it from History once a printer is set.</td>
+  </tr>
+  <tr>
+    <td>"Couldn't validate address" / an address warning</td>
+    <td>Not necessarily wrong — just unverified. Double-check it looks right, correct it with
+        <span class="btn">Edit Address</span> if needed, then ship.</td>
+  </tr>
+  <tr>
+    <td>"Printavo task not created" / "Customer note not updated"</td>
+    <td>The label already shipped successfully — this is only about Printavo's own records.
+        Use <span class="btn">Retry Sync</span> on the History screen.</td>
+  </tr>
+  <tr>
+    <td>"This contractor doesn't have a ship-from address or billing accounts set up yet."</td>
+    <td>Click <span class="btn">Set up this contractor</span> and fill in at least a ship-from
+        address (Section 9) before shipping their order.</td>
+  </tr>
+  <tr>
+    <td>Missing PO # on the label</td>
+    <td>The order has no PO # entered in Printavo — that reference is left blank, and the invoice # still
+        prints. Add the PO # in Printavo if it should be there.</td>
+  </tr>
+</table>
+
+<footer>
+  Printavo Shipper — Staff Guide. Questions about the app's setup: contact whoever manages Printavo
+  Shipper at your shop.
+</footer>
+
+</body>
+</html>

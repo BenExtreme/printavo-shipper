@@ -1,0 +1,87 @@
+<UserControl x:Class="PrintavoShipper.App.Views.OrdersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
+             mc:Ignorable="d">
+    <DockPanel>
+        <ui:TextBlock DockPanel.Dock="Top" Text="Orders" Style="{StaticResource PageHeaderTextStyle}" />
+
+        <ui:Card DockPanel.Dock="Top" Padding="{StaticResource SearchBarCardPadding}" Margin="{StaticResource SearchBarCardMargin}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Order #" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <ui:TextBox x:Name="VisualIdBox" Width="140" PlaceholderText="e.g. 1042" Text="{Binding VisualIdText, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Return" Command="{Binding LookupByVisualIdCommand}" />
+                    </TextBox.InputBindings>
+                </ui:TextBox>
+                <ui:Button Content="Open" Appearance="Secondary" Command="{Binding LookupByVisualIdCommand}" Margin="8,0,24,0" Padding="12,4" />
+
+                <TextBlock Text="Search" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <ui:TextBox Width="260" PlaceholderText="Nickname or customer..." Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Return" Command="{Binding SearchCommand}" />
+                    </TextBox.InputBindings>
+                </ui:TextBox>
+                <ui:Button Content="Search" Appearance="Secondary" Command="{Binding SearchCommand}" Margin="8,0,0,0" Padding="12,4" />
+            </StackPanel>
+        </ui:Card>
+
+        <TextBlock DockPanel.Dock="Top" Text="{Binding ErrorMessage}" Foreground="{DynamicResource SystemFillColorCriticalBrush}" Margin="0,0,0,12"
+                    Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisConverter}}" TextWrapping="Wrap" />
+
+        <TextBlock DockPanel.Dock="Top" Text="Loading..." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontStyle="Italic" Margin="0,0,0,12"
+                   Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisConverter}}" />
+
+        <TextBlock DockPanel.Dock="Top" Text="No orders match your search." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontStyle="Italic" Margin="0,0,0,12">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Orders.Count}" Value="0" />
+                                <Condition Binding="{Binding IsLoading}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Visible" />
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+
+        <TextBlock DockPanel.Dock="Bottom" Text="Showing the first 25 matches — narrow your search to find others." Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontSize="11" Margin="0,8,0,0"
+                   Visibility="{Binding ResultsTruncated, Converter={StaticResource BoolToVisConverter}}" />
+
+        <ui:DataGrid ItemsSource="{Binding Orders}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+                   SelectionMode="Single" MouseDoubleClick="OrdersGrid_MouseDoubleClick">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Order #" Binding="{Binding VisualId}" Width="90" />
+                <DataGridTextColumn Header="Nickname" Binding="{Binding Nickname}" Width="200" />
+                <DataGridTextColumn Header="Customer" Binding="{Binding CustomerCompanyName}" Width="200" />
+                <DataGridTemplateColumn Header="Status" SortMemberPath="StatusName" Width="140">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <DockPanel VerticalAlignment="Center">
+                                <emoji:TextBlock Text="{Binding StatusName, Converter={StaticResource EmojiDisplayTextConverter}}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                            </DockPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Delivery" Binding="{Binding DeliveryMethodName}" Width="90" />
+                <DataGridTextColumn Header="Due" Binding="{Binding DueAt, StringFormat=d}" Width="110" />
+                <DataGridTemplateColumn Width="80">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ui:Button Content="Open" Appearance="Secondary"
+                                    Command="{Binding DataContext.SelectOrderCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}" Padding="8,2" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </ui:DataGrid>
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,289 @@
+<UserControl x:Class="PrintavoShipper.App.Views.ContractorsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:coremodels="clr-namespace:PrintavoShipper.Core.Models;assembly=PrintavoShipper.Core"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style x:Key="ContractorFormFieldStyle" TargetType="ui:TextBox" BasedOn="{StaticResource {x:Type ui:TextBox}}">
+            <Setter Property="Margin" Value="0,0,6,6" />
+            <Setter Property="Width" Value="160" />
+        </Style>
+        <Style x:Key="BillingValidationText" TargetType="ui:TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding BillingValidationHasWarning}" Value="True">
+                    <Setter Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="360" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <DockPanel Grid.Column="0" Margin="0,0,16,0">
+            <ui:TextBlock DockPanel.Dock="Top" Text="Contractors" Style="{StaticResource PageHeaderTextStyle}" />
+
+            <!--
+                Fixed height + clipped so a status message appearing/wrapping/
+                disappearing never shifts the checkbox/list below it — that
+                reflow was causing mis-clicks on the contractor list right
+                after archiving/unarchiving.
+            -->
+            <Border DockPanel.Dock="Top" Height="36" Margin="0,0,0,12" ClipToBounds="True">
+                <Grid>
+                    <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource SystemFillColorCriticalBrush}" TextWrapping="Wrap" VerticalAlignment="Top"
+                               Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisConverter}}" />
+                    <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource SystemFillColorSuccessBrush}" TextWrapping="Wrap" VerticalAlignment="Top"
+                               Visibility="{Binding StatusMessage, Converter={StaticResource StringToVisConverter}}" />
+                </Grid>
+            </Border>
+
+            <TextBlock DockPanel.Dock="Top" Text="Loading..." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontStyle="Italic" Margin="0,0,0,12"
+                       Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisConverter}}" />
+
+            <CheckBox DockPanel.Dock="Top" Content="Show archived" IsChecked="{Binding ShowArchived}" Margin="0,0,0,12" />
+
+            <Expander DockPanel.Dock="Top" Header="Import from Printavo" Margin="0,0,0,12">
+                <StackPanel Margin="0,8,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <ui:TextBox Width="180" Style="{StaticResource ContractorFormFieldStyle}" PlaceholderText="Company name contains..." Text="{Binding ImportSearchText, UpdateSourceTrigger=PropertyChanged}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Return" Command="{Binding SearchPrintavoCustomersCommand}" />
+                            </TextBox.InputBindings>
+                        </ui:TextBox>
+                        <ui:Button Content="Search" Appearance="Secondary" Command="{Binding SearchPrintavoCustomersCommand}" Margin="6,0,0,0" Padding="8,3" />
+                    </StackPanel>
+                    <!-- A plain ItemsControl has no ScrollViewer, so without this
+                         template rows past MaxHeight were clipped and unreachable;
+                         the VirtualizingStackPanel means only visible rows are built. -->
+                    <ItemsControl ItemsSource="{Binding ImportCandidates}" MaxHeight="200" Margin="0,8,0,0"
+                                  VirtualizingPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
+                        <ItemsControl.Template>
+                            <ControlTemplate TargetType="ItemsControl">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                                              CanContentScroll="True" Focusable="False">
+                                    <ItemsPresenter />
+                                </ScrollViewer>
+                            </ControlTemplate>
+                        </ItemsControl.Template>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Padding="0,4">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding CompanyName}" Width="180" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                        <ui:Button Content="Add" Appearance="Secondary"
+                                                Command="{Binding DataContext.ImportContractorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}" Padding="8,2" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Expander>
+
+            <ui:DataGrid ItemsSource="{Binding Contractors}" SelectedItem="{Binding SelectedContractor}"
+                      AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" SelectionMode="Single">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Company" Binding="{Binding CompanyName}" Width="140">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                <Setter Property="ToolTip" Value="{Binding CompanyName}" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridCheckBoxColumn Header="Set up" Binding="{Binding IsConfigured, Mode=OneWay}" Width="80" />
+                    <DataGridCheckBoxColumn Header="Archived" Binding="{Binding IsArchived}" Width="90" />
+                </DataGrid.Columns>
+            </ui:DataGrid>
+        </DockPanel>
+
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto"
+                       Visibility="{Binding SelectedContractor, Converter={StaticResource NullToVisConverter}}">
+            <StackPanel MaxWidth="600" HorizontalAlignment="Left">
+                <DockPanel>
+                    <ui:Button DockPanel.Dock="Right" Content="Archive" Appearance="Secondary" Padding="10,4" VerticalAlignment="Top"
+                            Command="{Binding ArchiveSelectedCommand}"
+                            Visibility="{Binding SelectedContractor.IsArchived, Converter={StaticResource InverseBoolToVisConverter}}" />
+                    <ui:Button DockPanel.Dock="Right" Content="Unarchive" Appearance="Secondary" Padding="10,4" VerticalAlignment="Top"
+                            Command="{Binding UnarchiveSelectedCommand}"
+                            Visibility="{Binding SelectedContractor.IsArchived, Converter={StaticResource BoolToVisConverter}}" />
+                    <ui:TextBlock Text="{Binding SelectedContractor.CompanyName}" Style="{StaticResource PageHeaderTextStyle}" Margin="0" VerticalAlignment="Center" />
+                </DockPanel>
+                <TextBlock Text="Archived — hidden from the main list, but its ship-from/billing setup and shipment history are untouched."
+                           Foreground="{DynamicResource SystemFillColorCautionBrush}" FontStyle="Italic" Margin="0,4,0,0" TextWrapping="Wrap"
+                           Visibility="{Binding SelectedContractor.IsArchived, Converter={StaticResource BoolToVisConverter}}" />
+
+                <ui:TextBlock Text="Ship-From Addresses" Style="{StaticResource SectionHeaderTextStyle}" />
+                <TextBlock Text="No ship-from addresses yet — add one below." Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontStyle="Italic"
+                           Visibility="{Binding SelectedContractor.ShipFromAddresses.Count, Converter={StaticResource InverseCountToVisConverter}}" />
+                <ItemsControl ItemsSource="{Binding SelectedContractor.ShipFromAddresses}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ui:Card Padding="{StaticResource ItemCardPadding}" Margin="{StaticResource ItemCardMargin}" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}">
+                                <DockPanel>
+                                    <ui:Button DockPanel.Dock="Right" Content="Delete" Appearance="Danger" Padding="8,2" VerticalAlignment="Top"
+                                            Command="{Binding DataContext.DeleteShipFromAddressCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}" />
+                                    <StackPanel>
+                                        <TextBlock FontWeight="Bold">
+                                            <Run>
+                                                <Run.Text>
+                                                    <MultiBinding Converter="{StaticResource LabelOrDefaultConverter}">
+                                                        <Binding Path="Label" Mode="OneWay" />
+                                                        <Binding Path="IsDefault" Mode="OneWay" />
+                                                    </MultiBinding>
+                                                </Run.Text>
+                                            </Run>
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding CompanyName}" />
+                                        <TextBlock>
+                                            <Run Text="{Binding Address1, Mode=OneWay}" /> <Run Text="{Binding Address2, Mode=OneWay}" />
+                                        </TextBlock>
+                                        <TextBlock>
+                                            <Run Text="{Binding City, Mode=OneWay}" />, <Run Text="{Binding State, Mode=OneWay}" /> <Run Text="{Binding PostalCode, Mode=OneWay}" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DockPanel>
+                            </ui:Card>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Expander Header="Add ship-from address" Margin="0,8,0,0">
+                    <WrapPanel Margin="0,8,0,0">
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" PlaceholderText="Label (e.g. Main Warehouse)" Text="{Binding NewShipFromLabel, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="Label (e.g. Main Warehouse) — not sent to UPS" />
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" PlaceholderText="Attention name" MaxLength="{x:Static coremodels:UpsAddressLimits.AttentionNameMaxLength}"
+                                 Text="{Binding NewShipFromAttentionName, UpdateSourceTrigger=PropertyChanged}" ToolTip="Attention name (max 35 chars, per UPS)" />
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" PlaceholderText="Company name" MaxLength="{x:Static coremodels:UpsAddressLimits.NameMaxLength}"
+                                 Text="{Binding NewShipFromCompanyName, UpdateSourceTrigger=PropertyChanged}" ToolTip="Company name (max 35 chars, per UPS)" />
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" Width="220" PlaceholderText="Address line 1" MaxLength="{x:Static coremodels:UpsAddressLimits.AddressLineMaxLength}"
+                                 Text="{Binding NewShipFromAddress1, UpdateSourceTrigger=PropertyChanged}" ToolTip="Address line 1 (max 35 chars, per UPS)" />
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" Width="220" PlaceholderText="Address line 2 (optional)" MaxLength="{x:Static coremodels:UpsAddressLimits.AddressLineMaxLength}"
+                                 Text="{Binding NewShipFromAddress2, UpdateSourceTrigger=PropertyChanged}" ToolTip="Address line 2 (max 35 chars, per UPS)" />
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" PlaceholderText="City" MaxLength="{x:Static coremodels:UpsAddressLimits.CityMaxLength}"
+                                 Text="{Binding NewShipFromCity, UpdateSourceTrigger=PropertyChanged}" ToolTip="City (max 30 chars, per UPS)" />
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" Width="60" PlaceholderText="State" MaxLength="{x:Static coremodels:UpsAddressLimits.StateProvinceCodeMaxLength}"
+                                 Text="{Binding NewShipFromState, UpdateSourceTrigger=PropertyChanged}" ToolTip="State/province code (max 5 chars, per UPS)" />
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" Width="80" PlaceholderText="Zip code" MaxLength="{x:Static coremodels:UpsAddressLimits.PostalCodeMaxLength}"
+                                 Text="{Binding NewShipFromPostalCode, UpdateSourceTrigger=PropertyChanged}" ToolTip="Postal code (max 9 chars, per UPS)" />
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" Width="50" PlaceholderText="Country" MaxLength="{x:Static coremodels:UpsAddressLimits.CountryCodeLength}"
+                                 Text="{Binding NewShipFromCountryCode, UpdateSourceTrigger=PropertyChanged}" ToolTip="2-letter country code, per UPS" />
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" PlaceholderText="Phone (optional)" MaxLength="{x:Static coremodels:UpsAddressLimits.PhoneNumberMaxLength}"
+                                 Text="{Binding NewShipFromPhoneNumber, UpdateSourceTrigger=PropertyChanged}" ToolTip="Phone number (max 15 chars, per UPS)" />
+                        <CheckBox Content="Default" IsChecked="{Binding NewShipFromIsDefault}" VerticalAlignment="Center" Margin="0,0,10,6" />
+                        <ui:Button Content="Add Address" Appearance="Secondary" Command="{Binding AddShipFromAddressCommand}" Padding="10,4" Margin="0,0,0,6" />
+                    </WrapPanel>
+                </Expander>
+
+                <ui:TextBlock Text="Third-Party Billing Accounts" Style="{StaticResource SectionHeaderTextStyle}" />
+                <TextBlock Text="No billing accounts yet — add one below." Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontStyle="Italic"
+                           Visibility="{Binding SelectedContractor.BillingAccounts.Count, Converter={StaticResource InverseCountToVisConverter}}" />
+                <ItemsControl ItemsSource="{Binding SelectedContractor.BillingAccounts}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ui:Card Padding="{StaticResource ItemCardPadding}" Margin="{StaticResource ItemCardMargin}" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}">
+                                <DockPanel>
+                                    <ui:Button DockPanel.Dock="Right" Content="Delete" Appearance="Danger" Padding="8,2" VerticalAlignment="Top"
+                                            Command="{Binding DataContext.DeleteBillingAccountCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}" />
+                                    <ui:Button DockPanel.Dock="Right" Content="Set Default" Appearance="Secondary" Padding="8,2" Margin="0,0,6,0" VerticalAlignment="Top"
+                                            Command="{Binding DataContext.SetDefaultBillingAccountCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"
+                                            Visibility="{Binding IsDefault, Converter={StaticResource InverseBoolToVisConverter}}" />
+                                    <StackPanel>
+                                        <TextBlock FontWeight="Bold">
+                                            <Run Text="{Binding Label, Mode=OneWay}" />
+                                            <Run Text="{Binding IsDefault, Converter={StaticResource BoolToDefaultLabelConverter}}" />
+                                        </TextBlock>
+                                        <TextBlock>
+                                            <Run Text="Account #" /> <Run Text="{Binding UpsAccountNumber, Mode=OneWay}" />
+                                            <Run Text=" · Zip " /> <Run Text="{Binding UpsAccountPostalCode, Mode=OneWay}" />
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding Notes}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                    </StackPanel>
+                                </DockPanel>
+                            </ui:Card>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Expander Header="Add billing account" Margin="0,8,0,24">
+                    <WrapPanel Margin="0,8,0,0">
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" PlaceholderText="Label" Text="{Binding NewBillingLabel, UpdateSourceTrigger=PropertyChanged}" ToolTip="Label" />
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" Width="100" PlaceholderText="Account Number" MaxLength="{x:Static coremodels:UpsAddressLimits.AccountNumberMaxLength}"
+                                 Text="{Binding NewBillingAccountNumber, UpdateSourceTrigger=PropertyChanged}" ToolTip="UPS account number" />
+                        <ui:Button Content="Validate" Appearance="Secondary" Command="{Binding ValidateNewBillingAccountCommand}" Padding="8,3" Margin="0,0,6,6" VerticalAlignment="Center" />
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" Width="80" PlaceholderText="ZIP Code" MaxLength="{x:Static coremodels:UpsAddressLimits.PostalCodeMaxLength}"
+                                 Text="{Binding NewBillingPostalCode, UpdateSourceTrigger=PropertyChanged}" ToolTip="Account postal code" />
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" Width="50" PlaceholderText="Country" MaxLength="{x:Static coremodels:UpsAddressLimits.CountryCodeLength}"
+                                 Text="{Binding NewBillingCountryCode, UpdateSourceTrigger=PropertyChanged}" ToolTip="Country" />
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" Width="220" PlaceholderText="Notes (optional)" Text="{Binding NewBillingNotes, UpdateSourceTrigger=PropertyChanged}" ToolTip="Notes" />
+                        <CheckBox Content="Default" IsChecked="{Binding NewBillingIsDefault}" VerticalAlignment="Center" Margin="0,0,10,6" />
+                        <ui:Button Content="Add Billing Account" Appearance="Secondary" Command="{Binding AddBillingAccountCommand}" Padding="10,4" Margin="0,0,0,6" />
+                        <ui:TextBlock Text="{Binding BillingValidationStatus}" Style="{StaticResource BillingValidationText}"
+                                 Width="600" TextWrapping="Wrap" FontSize="12" Margin="0,0,0,6"
+                                 Visibility="{Binding BillingValidationStatus, Converter={StaticResource StringToVisConverter}}" />
+                    </WrapPanel>
+                </Expander>
+
+                <ui:TextBlock Text="FedEx Billing Accounts" Style="{StaticResource SectionHeaderTextStyle}" />
+                <TextBlock Text="No FedEx billing accounts yet — add one below." Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontStyle="Italic"
+                           Visibility="{Binding SelectedContractor.FedExBillingAccounts.Count, Converter={StaticResource InverseCountToVisConverter}}" />
+                <ItemsControl ItemsSource="{Binding SelectedContractor.FedExBillingAccounts}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ui:Card Padding="{StaticResource ItemCardPadding}" Margin="{StaticResource ItemCardMargin}" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}">
+                                <DockPanel>
+                                    <ui:Button DockPanel.Dock="Right" Content="Delete" Appearance="Danger" Padding="8,2" VerticalAlignment="Top"
+                                            Command="{Binding DataContext.DeleteFedExBillingAccountCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}" />
+                                    <ui:Button DockPanel.Dock="Right" Content="Set Default" Appearance="Secondary" Padding="8,2" Margin="0,0,6,0" VerticalAlignment="Top"
+                                            Command="{Binding DataContext.SetDefaultFedExBillingAccountCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"
+                                            Visibility="{Binding IsDefault, Converter={StaticResource InverseBoolToVisConverter}}" />
+                                    <StackPanel>
+                                        <TextBlock FontWeight="Bold">
+                                            <Run Text="{Binding Label, Mode=OneWay}" />
+                                            <Run Text="{Binding IsDefault, Converter={StaticResource BoolToDefaultLabelConverter}}" />
+                                        </TextBlock>
+                                        <TextBlock>
+                                            <Run Text="Account #" /> <Run Text="{Binding AccountNumber, Mode=OneWay}" />
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding Notes}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                    </StackPanel>
+                                </DockPanel>
+                            </ui:Card>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Expander Header="Add FedEx billing account" Margin="0,8,0,24">
+                    <WrapPanel Margin="0,8,0,0">
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" PlaceholderText="Label" Text="{Binding NewFedExBillingLabel, UpdateSourceTrigger=PropertyChanged}" ToolTip="Label" />
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" Width="100" PlaceholderText="Account Number"
+                                 Text="{Binding NewFedExBillingAccountNumber, UpdateSourceTrigger=PropertyChanged}" ToolTip="FedEx account number" />
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" Width="50" PlaceholderText="Country" MaxLength="{x:Static coremodels:UpsAddressLimits.CountryCodeLength}"
+                                 Text="{Binding NewFedExBillingCountryCode, UpdateSourceTrigger=PropertyChanged}" ToolTip="Country" />
+                        <ui:TextBox Style="{StaticResource ContractorFormFieldStyle}" Width="220" PlaceholderText="Notes (optional)" Text="{Binding NewFedExBillingNotes, UpdateSourceTrigger=PropertyChanged}" ToolTip="Notes" />
+                        <CheckBox Content="Default" IsChecked="{Binding NewFedExBillingIsDefault}" VerticalAlignment="Center" Margin="0,0,10,6" />
+                        <ui:Button Content="Add Billing Account" Appearance="Secondary" Command="{Binding AddFedExBillingAccountCommand}" Padding="10,4" Margin="0,0,0,6" />
+                    </WrapPanel>
+                </Expander>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

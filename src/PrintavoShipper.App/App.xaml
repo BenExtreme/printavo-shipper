@@ -1,0 +1,72 @@
+<Application x:Class="PrintavoShipper.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:PrintavoShipper.App"
+             xmlns:vm="clr-namespace:PrintavoShipper.App.ViewModels"
+             xmlns:views="clr-namespace:PrintavoShipper.App.Views"
+             xmlns:conv="clr-namespace:PrintavoShipper.App.Converters"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:ThemesDictionary Theme="Light" />
+                <ui:ControlsDictionary />
+                <ResourceDictionary Source="Styles/AppStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <conv:BoolToVisibilityConverter x:Key="BoolToVisConverter" />
+            <conv:StringToVisibilityConverter x:Key="StringToVisConverter" />
+            <conv:NullToVisibilityConverter x:Key="NullToVisConverter" />
+            <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisConverter" />
+            <conv:InverseNullToVisibilityConverter x:Key="InverseNullToVisConverter" />
+            <conv:CountToVisibilityConverter x:Key="CountToVisConverter" />
+            <conv:InverseCountToVisibilityConverter x:Key="InverseCountToVisConverter" />
+            <conv:BoolToDefaultLabelConverter x:Key="BoolToDefaultLabelConverter" />
+            <conv:LabelOrDefaultConverter x:Key="LabelOrDefaultConverter" />
+            <conv:ShipFromAddressToOneLineConverter x:Key="ShipFromAddressToOneLineConverter" />
+            <conv:PurchasedStatusToVisibilityConverter x:Key="PurchasedStatusToVisConverter" />
+            <conv:IndexToRowNumberConverter x:Key="IndexToRowNumberConverter" />
+            <conv:ItemCountToShipmentsLabelConverter x:Key="ItemCountToShipmentsLabelConverter" />
+            <conv:DateIsTodayToBoolConverter x:Key="DateIsTodayToBoolConverter" />
+            <conv:VisibilityToBoolConverter x:Key="VisibilityToBoolConverter" />
+            <conv:CarrierToBoolConverter x:Key="CarrierToBoolConverter" />
+            <conv:RateQuoteAppearanceConverter x:Key="RateQuoteAppearanceConverter" />
+            <conv:EmojiDisplayTextConverter x:Key="EmojiDisplayTextConverter" />
+
+            <!-- emoji:TextBlock (color emoji, see EmojiDisplayText) is its own
+                 type, so wpf-ui's implicit TextBlock style — theme text color
+                 included — wouldn't reach it on its own (same exact-type
+                 matching as CLAUDE.md gotcha #7). -->
+            <Style TargetType="emoji:TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}" />
+
+            <DataTemplate DataType="{x:Type vm:OrdersViewModel}">
+                <views:OrdersView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:OrderDetailViewModel}">
+                <views:OrderDetailView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:NewShipmentViewModel}">
+                <views:NewShipmentView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ShipmentCardViewModel}">
+                <views:ShipmentCardView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:FedExShipmentCardViewModel}">
+                <views:FedExShipmentCardView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ContractorsViewModel}">
+                <views:ContractorsView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+                <views:SettingsView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ShipmentHistoryViewModel}">
+                <views:ShipmentHistoryView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ArchiveViewerViewModel}">
+                <views:ArchiveViewerView />
+            </DataTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

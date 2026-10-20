@@ -1,0 +1,92 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+
+    <!-- Page header: Title typography + the bottom margin every view needs,
+         so views don't repeat FontTypography + Margin everywhere. -->
+    <Style x:Key="PageHeaderTextStyle" TargetType="ui:TextBlock">
+        <Setter Property="FontTypography" Value="Title" />
+        <Setter Property="Margin" Value="0,0,0,16" />
+    </Style>
+
+    <!--
+        NOTE on ui:Card: applying a named Style (via Style="{StaticResource ...}")
+        to ui:Card silently breaks its Background/border rendering entirely —
+        confirmed empirically (a Style with only Padding/Margin setters, no
+        Template, still suppresses the card's visual chrome even for a local
+        Background value that should normally win). ui:TextBox/ui:Button have
+        the same underlying issue (a Style targeting them needs
+        BasedOn="{StaticResource {x:Type ui:TextBox}}" etc., or it discards
+        the library's default Template — confirmed empirically). ui:TextBlock
+        is different again: WPF-UI 4.3.0 doesn't register a
+        {x:Type ui:TextBlock} keyed default style at all, so BasedOn on a
+        ui:TextBlock style throws "Cannot find resource named
+        Wpf.Ui.Controls.TextBlock" at runtime — confirmed empirically (crashed
+        the app). So: ui:TextBox/ui:Button styles should always add BasedOn;
+        ui:TextBlock and ui:Card styles must NOT. Card "styles" below stay as
+        plain shared VALUES (Thickness/Brush), applied as individual inline
+        properties on each ui:Card instance — never via Style=.
+    -->
+
+    <!-- Search/filter bar card spacing. -->
+    <Thickness x:Key="SearchBarCardPadding">12</Thickness>
+    <Thickness x:Key="SearchBarCardMargin">0,0,0,16</Thickness>
+
+    <!-- Generic content panel spacing (notes, address blocks, banners,
+         settings sections). -->
+    <Thickness x:Key="ContentCardPadding">14</Thickness>
+    <Thickness x:Key="ContentCardMargin">0,0,0,16</Thickness>
+
+    <!-- Small item-row card spacing, for use inside an ItemsControl
+         (ship-from addresses, billing accounts, own UPS accounts).
+         Pair with Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
+         so it reads distinctly when nested inside an outer content card. -->
+    <Thickness x:Key="ItemCardPadding">10</Thickness>
+    <Thickness x:Key="ItemCardMargin">0,0,0,6</Thickness>
+
+    <!-- Section header inside a page or card. Consolidates ContractorsView's
+         and SettingsView's separate local "SectionHeader" styles. -->
+    <Style x:Key="SectionHeaderTextStyle" TargetType="ui:TextBlock">
+        <Setter Property="FontTypography" Value="BodyStrong" />
+        <Setter Property="Margin" Value="0,16,0,8" />
+    </Style>
+
+    <!-- Small muted caption above a field or value. Consolidates SettingsView's
+         "FieldLabel", OrderDetailView's "Label", and ShipmentCardView's
+         "FieldLabel". -->
+    <Style x:Key="FieldLabelTextStyle" TargetType="ui:TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Margin" Value="0,8,0,2" />
+    </Style>
+
+    <!-- Bare expand/collapse chevron: points right when unchecked, down when
+         checked. Plain ToggleButton (not a wpf-ui control), so a full
+         Template replacement is safe here. -->
+    <Style x:Key="ChevronToggleButtonStyle" TargetType="ToggleButton">
+        <Setter Property="Width" Value="24" />
+        <Setter Property="Height" Value="24" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border Background="Transparent">
+                        <ui:SymbolIcon x:Name="Chevron" Symbol="ChevronRight24" FontSize="14"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Chevron" Property="RenderTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="90" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

@@ -1,0 +1,450 @@
+<UserControl x:Class="PrintavoShipper.App.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:coremodels="clr-namespace:PrintavoShipper.Core.Models;assembly=PrintavoShipper.Core"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style TargetType="ui:TextBox" BasedOn="{StaticResource {x:Type ui:TextBox}}">
+            <Setter Property="Padding" Value="6,4" />
+            <Setter Property="Width" Value="320" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+        <Style TargetType="ui:Button" x:Key="ActionButton" BasedOn="{StaticResource {x:Type ui:Button}}">
+            <Setter Property="Padding" Value="14,6" />
+            <Setter Property="Margin" Value="0,10,8,0" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+    </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="480" HorizontalAlignment="Left">
+            <ui:TextBlock Text="Settings" Style="{StaticResource PageHeaderTextStyle}" />
+
+            <ui:Card Padding="{StaticResource ContentCardPadding}" Margin="{StaticResource ContentCardMargin}">
+                <StackPanel>
+                    <ui:TextBlock Text="Printavo" Style="{StaticResource SectionHeaderTextStyle}" Margin="0" />
+                    <ui:TextBlock Text="Account email" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ui:TextBox Text="{Binding PrintavoEmail, UpdateSourceTrigger=PropertyChanged}" />
+                    <StackPanel Orientation="Horizontal">
+                        <ui:TextBlock Text="API token" Style="{StaticResource FieldLabelTextStyle}" />
+                        <ui:TextBlock Text=" (already saved — leave blank to keep it)" Style="{StaticResource FieldLabelTextStyle}"
+                                      Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontStyle="Italic"
+                                      Visibility="{Binding IsPrintavoTokenConfigured, Converter={StaticResource BoolToVisConverter}}" />
+                    </StackPanel>
+                    <ui:TextBox Text="{Binding PrintavoApiTokenInput, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Text="{Binding PrintavoCurrentUserName, StringFormat='Signed in as: {0}'}"
+                               Foreground="{DynamicResource SystemFillColorSuccessBrush}" Margin="0,8,0,0"
+                               Visibility="{Binding PrintavoCurrentUserName, Converter={StaticResource StringToVisConverter}}" />
+                    <ui:Button Content="Test Printavo Connection" Appearance="Secondary" Command="{Binding TestPrintavoConnectionCommand}" Style="{StaticResource ActionButton}" />
+                </StackPanel>
+            </ui:Card>
+
+            <ui:Card Padding="{StaticResource ContentCardPadding}" Margin="{StaticResource ContentCardMargin}">
+                <StackPanel>
+                    <ui:TextBlock Text="Printavo Workflow" Style="{StaticResource SectionHeaderTextStyle}" Margin="0" />
+                    <TextBlock Text="Statuses, users, and delivery methods are specific to your Printavo account — pick which ones this app uses."
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,0,0,4" />
+                    <TextBlock Text="{Binding PrintavoListsMessage}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontStyle="Italic" TextWrapping="Wrap"
+                               Visibility="{Binding PrintavoListsMessage, Converter={StaticResource StringToVisConverter}}" />
+                    <ui:Button Content="Reload from Printavo" Appearance="Secondary" Command="{Binding ReloadPrintavoListsCommand}" Style="{StaticResource ActionButton}" />
+
+                    <ui:TextBlock Text="Order statuses" Style="{StaticResource FieldLabelTextStyle}" Margin="0,16,0,2" />
+                    <TextBlock Text="Shipping / Pick-up: offered in the order screen's status picker for that kind of order. Hide: left out of the Orders list (quotes, already shipped, on hold...)."
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                    <Grid Margin="6,0,6,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="64" />
+                            <ColumnDefinition Width="64" />
+                            <ColumnDefinition Width="48" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Status" FontWeight="SemiBold" />
+                        <TextBlock Grid.Column="1" Text="Shipping" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                        <TextBlock Grid.Column="2" Text="Pick-up" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                        <TextBlock Grid.Column="3" Text="Hide" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                    </Grid>
+                    <Border BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4">
+                        <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding StatusRows}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="6,1">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="64" />
+                                                <ColumnDefinition Width="64" />
+                                                <ColumnDefinition Width="48" />
+                                            </Grid.ColumnDefinitions>
+                                            <DockPanel Grid.Column="0" VerticalAlignment="Center">
+                                                <emoji:TextBlock Text="{Binding Name, Converter={StaticResource EmojiDisplayTextConverter}}" ToolTip="{Binding Name, Converter={StaticResource EmojiDisplayTextConverter}}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                            </DockPanel>
+                                            <CheckBox Grid.Column="1" IsChecked="{Binding ShowForShipping}" HorizontalAlignment="Center" MinWidth="0" Padding="0" />
+                                            <CheckBox Grid.Column="2" IsChecked="{Binding ShowForPickup}" HorizontalAlignment="Center" MinWidth="0" Padding="0" />
+                                            <CheckBox Grid.Column="3" IsChecked="{Binding HideFromOrders}" HorizontalAlignment="Center" MinWidth="0" Padding="0" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Border>
+
+                    <ui:TextBlock Text="Delivery methods" Style="{StaticResource FieldLabelTextStyle}" Margin="0,16,0,2" />
+                    <TextBlock Text="Printavo delivery method names, comma-separated (not case-sensitive). An order with a name not listed here ships via UPS, with a warning."
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,0,0,2" />
+                    <ui:TextBlock Text="Ship via UPS" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ui:TextBox Text="{Binding UpsDeliveryMethodNames, UpdateSourceTrigger=PropertyChanged}" />
+                    <ui:TextBlock Text="Ship via FedEx" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ui:TextBox Text="{Binding FedExDeliveryMethodNames, UpdateSourceTrigger=PropertyChanged}" />
+                    <ui:TextBlock Text="Pick-up (prints box labels instead of shipping)" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ui:TextBox Text="{Binding PickupDeliveryMethodNames, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <ui:TextBlock Text="Staff" Style="{StaticResource FieldLabelTextStyle}" Margin="0,16,0,2" />
+                    <TextBlock Text="Ticked users appear in the order screen's Add Task &quot;Assign to&quot; list and in a UPS shipment's &quot;also notify on delivery&quot; picker (preselected on orders they own). The email starts as their Printavo login — change it if they read a different inbox, or clear it to leave them out of notifications."
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                    <Grid Margin="6,0,6,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="28" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="210" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="1" Text="Printavo user" FontWeight="SemiBold" />
+                        <TextBlock Grid.Column="2" Text="Notification email" FontWeight="SemiBold" />
+                    </Grid>
+                    <Border BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4">
+                        <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding UserRows}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="6,2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="28" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="210" />
+                                            </Grid.ColumnDefinitions>
+                                            <CheckBox Grid.Column="0" IsChecked="{Binding IsStaff}" MinWidth="0" Padding="0" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Name}" ToolTip="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                            <ui:TextBox Grid.Column="2" Width="Auto" HorizontalAlignment="Stretch"
+                                                     MaxLength="{x:Static coremodels:UpsAddressLimits.EmailMaxLength}"
+                                                     IsEnabled="{Binding IsStaff}"
+                                                     Text="{Binding NotifyEmail, UpdateSourceTrigger=PropertyChanged}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Border>
+                    <ui:TextBlock Text="Shipping-cost tasks assigned to" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ComboBox Width="320" Padding="6,4" HorizontalAlignment="Left" ItemsSource="{Binding UserChoices}" SelectedItem="{Binding ShippingCostTaskAssignee}" />
+                    <TextBlock Text="When a shipment is billed to your own account, a Printavo task recording its cost is added to the order for this person. &quot;Order owner&quot; assigns it to whoever owns that order in Printavo (unassigned if the order has no owner)."
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,2,0,0" />
+                </StackPanel>
+            </ui:Card>
+
+            <ui:Card Padding="{StaticResource ContentCardPadding}" Margin="{StaticResource ContentCardMargin}">
+                <StackPanel>
+                    <ui:TextBlock Text="UPS" Style="{StaticResource SectionHeaderTextStyle}" Margin="0" />
+                    <ui:TextBlock Text="Client ID" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ui:TextBox Text="{Binding UpsClientIdInput, UpdateSourceTrigger=PropertyChanged}" />
+                    <ui:TextBlock Text="Client Secret" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ui:TextBox Text="{Binding UpsClientSecretInput, UpdateSourceTrigger=PropertyChanged}" />
+                    <ui:TextBlock Text="Environment" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ComboBox Width="320" Padding="6,4" HorizontalAlignment="Left" ItemsSource="{Binding UpsEnvironments}" SelectedItem="{Binding UpsEnvironment}" />
+                    <ui:TextBlock Text="Merchant ID (optional)" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ui:TextBox Text="{Binding UpsMerchantId, UpdateSourceTrigger=PropertyChanged}" />
+                    <ui:Button Content="Test UPS Connection" Appearance="Secondary" Command="{Binding TestUpsConnectionCommand}" Style="{StaticResource ActionButton}" />
+                </StackPanel>
+            </ui:Card>
+
+            <ui:Card Padding="{StaticResource ContentCardPadding}" Margin="{StaticResource ContentCardMargin}">
+                <StackPanel>
+                    <ui:TextBlock Text="Our UPS Accounts" Style="{StaticResource SectionHeaderTextStyle}" Margin="0" />
+                    <TextBlock Text="Every account below gets checked when a shipment card asks for rates, so you can pick whichever comes back cheapest."
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                    <ItemsControl ItemsSource="{Binding OwnUpsAccounts}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ui:Card Padding="{StaticResource ItemCardPadding}" Margin="{StaticResource ItemCardMargin}" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" MaxWidth="480">
+                                    <DockPanel>
+                                        <ui:Button DockPanel.Dock="Right" Content="Delete" Appearance="Danger" Padding="8,2" VerticalAlignment="Top"
+                                                Command="{Binding DataContext.DeleteOwnUpsAccountCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}" />
+                                        <StackPanel>
+                                            <TextBlock FontWeight="Bold">
+                                                <Run Text="{Binding Label, Mode=OneWay}" />
+                                                <Run Text="{Binding IsDefault, Converter={StaticResource BoolToDefaultLabelConverter}}" />
+                                            </TextBlock>
+                                            <TextBlock>
+                                                <Run Text="Account #" /> <Run Text="{Binding AccountNumber, Mode=OneWay}" />
+                                                <Run Text=" · Zip " /> <Run Text="{Binding PostalCode, Mode=OneWay}" />
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DockPanel>
+                                </ui:Card>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Expander Header="Add a UPS account" Margin="0,8,0,0">
+                        <WrapPanel Margin="0,8,0,0">
+                            <StackPanel Margin="0,0,10,6">
+                                <ui:TextBlock Text="Label" Style="{StaticResource FieldLabelTextStyle}" Margin="0,0,0,2" />
+                                <ui:TextBox Width="160" Text="{Binding NewOwnAccountLabel, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,10,6">
+                                <ui:TextBlock Text="Account number" Style="{StaticResource FieldLabelTextStyle}" Margin="0,0,0,2" />
+                                <ui:TextBox Width="120" MaxLength="{x:Static coremodels:UpsAddressLimits.AccountNumberMaxLength}"
+                                         Text="{Binding NewOwnAccountNumber, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,10,6">
+                                <ui:TextBlock Text="Postal code" Style="{StaticResource FieldLabelTextStyle}" Margin="0,0,0,2" />
+                                <ui:TextBox Width="90" MaxLength="{x:Static coremodels:UpsAddressLimits.PostalCodeMaxLength}"
+                                         Text="{Binding NewOwnAccountPostalCode, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,10,6">
+                                <ui:TextBlock Text="Country" Style="{StaticResource FieldLabelTextStyle}" Margin="0,0,0,2" />
+                                <ui:TextBox Width="60" MaxLength="{x:Static coremodels:UpsAddressLimits.CountryCodeLength}"
+                                         Text="{Binding NewOwnAccountCountryCode, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <CheckBox Content="Default" IsChecked="{Binding NewOwnAccountIsDefault}" VerticalAlignment="Bottom" Margin="0,0,10,10" />
+                            <ui:Button Content="Add Account" Appearance="Secondary" Command="{Binding AddOwnUpsAccountCommand}" Padding="10,4" Margin="0,0,0,10" VerticalAlignment="Bottom" />
+                        </WrapPanel>
+                    </Expander>
+                </StackPanel>
+            </ui:Card>
+
+            <ui:Card Padding="{StaticResource ContentCardPadding}" Margin="{StaticResource ContentCardMargin}">
+                <StackPanel>
+                    <ui:TextBlock Text="FedEx" Style="{StaticResource SectionHeaderTextStyle}" Margin="0" />
+                    <ui:TextBlock Text="Client ID" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ui:TextBox Text="{Binding FedExClientIdInput, UpdateSourceTrigger=PropertyChanged}" />
+                    <ui:TextBlock Text="Client Secret" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ui:TextBox Text="{Binding FedExClientSecretInput, UpdateSourceTrigger=PropertyChanged}" />
+                    <ui:TextBlock Text="Environment" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ComboBox Width="320" Padding="6,4" HorizontalAlignment="Left" ItemsSource="{Binding FedExEnvironments}" SelectedItem="{Binding FedExEnvironment}" />
+                    <ui:TextBlock Text="Account number (tied to this app's FedEx developer project)" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ui:TextBox Text="{Binding FedExAccountNumber, UpdateSourceTrigger=PropertyChanged}" />
+                    <ui:Button Content="Test FedEx Connection" Appearance="Secondary" Command="{Binding TestFedExConnectionCommand}" Style="{StaticResource ActionButton}" />
+                </StackPanel>
+            </ui:Card>
+
+            <ui:Card Padding="{StaticResource ContentCardPadding}" Margin="{StaticResource ContentCardMargin}">
+                <StackPanel>
+                    <ui:TextBlock Text="Our FedEx Accounts" Style="{StaticResource SectionHeaderTextStyle}" Margin="0" />
+                    <TextBlock Text="Used when a FedEx shipment card bills our own account instead of a customer's — less common than third-party billing here, but a real option on every FedEx shipment card."
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                    <ItemsControl ItemsSource="{Binding OwnFedExAccounts}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ui:Card Padding="{StaticResource ItemCardPadding}" Margin="{StaticResource ItemCardMargin}" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" MaxWidth="480">
+                                    <DockPanel>
+                                        <ui:Button DockPanel.Dock="Right" Content="Delete" Appearance="Danger" Padding="8,2" VerticalAlignment="Top"
+                                                Command="{Binding DataContext.DeleteOwnFedExAccountCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}" />
+                                        <StackPanel>
+                                            <TextBlock FontWeight="Bold">
+                                                <Run Text="{Binding Label, Mode=OneWay}" />
+                                                <Run Text="{Binding IsDefault, Converter={StaticResource BoolToDefaultLabelConverter}}" />
+                                            </TextBlock>
+                                            <TextBlock>
+                                                <Run Text="Account #" /> <Run Text="{Binding AccountNumber, Mode=OneWay}" />
+                                                <Run Text=" · Zip " /> <Run Text="{Binding PostalCode, Mode=OneWay}" />
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DockPanel>
+                                </ui:Card>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Expander Header="Add a FedEx account" Margin="0,8,0,0">
+                        <WrapPanel Margin="0,8,0,0">
+                            <StackPanel Margin="0,0,10,6">
+                                <ui:TextBlock Text="Label" Style="{StaticResource FieldLabelTextStyle}" Margin="0,0,0,2" />
+                                <ui:TextBox Width="160" Text="{Binding NewOwnFedExAccountLabel, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,10,6">
+                                <ui:TextBlock Text="Account number" Style="{StaticResource FieldLabelTextStyle}" Margin="0,0,0,2" />
+                                <ui:TextBox Width="120" Text="{Binding NewOwnFedExAccountNumber, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,10,6">
+                                <ui:TextBlock Text="Postal code" Style="{StaticResource FieldLabelTextStyle}" Margin="0,0,0,2" />
+                                <ui:TextBox Width="90" MaxLength="{x:Static coremodels:UpsAddressLimits.PostalCodeMaxLength}"
+                                         Text="{Binding NewOwnFedExAccountPostalCode, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,10,6">
+                                <ui:TextBlock Text="Country" Style="{StaticResource FieldLabelTextStyle}" Margin="0,0,0,2" />
+                                <ui:TextBox Width="60" MaxLength="{x:Static coremodels:UpsAddressLimits.CountryCodeLength}"
+                                         Text="{Binding NewOwnFedExAccountCountryCode, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <CheckBox Content="Default" IsChecked="{Binding NewOwnFedExAccountIsDefault}" VerticalAlignment="Bottom" Margin="0,0,10,10" />
+                            <ui:Button Content="Add Account" Appearance="Secondary" Command="{Binding AddOwnFedExAccountCommand}" Padding="10,4" Margin="0,0,0,10" VerticalAlignment="Bottom" />
+                        </WrapPanel>
+                    </Expander>
+                </StackPanel>
+            </ui:Card>
+
+            <ui:Card Padding="{StaticResource ContentCardPadding}" Margin="{StaticResource ContentCardMargin}">
+                <StackPanel>
+                    <ui:TextBlock Text="Default Ship-From Address" Style="{StaticResource SectionHeaderTextStyle}" Margin="0" />
+                    <TextBlock Text="Used when a customer isn't tied to a contractor that has its own ship-from address configured — the shop ships as itself in that case."
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                    <ui:TextBlock Text="Company name" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ui:TextBox MaxLength="{x:Static coremodels:UpsAddressLimits.NameMaxLength}"
+                             Text="{Binding DefaultShipFromCompanyName, UpdateSourceTrigger=PropertyChanged}" />
+                    <ui:TextBlock Text="Attention name (optional)" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ui:TextBox MaxLength="{x:Static coremodels:UpsAddressLimits.AttentionNameMaxLength}"
+                             Text="{Binding DefaultShipFromAttentionName, UpdateSourceTrigger=PropertyChanged}" />
+                    <ui:TextBlock Text="Address line 1" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ui:TextBox MaxLength="{x:Static coremodels:UpsAddressLimits.AddressLineMaxLength}"
+                             Text="{Binding DefaultShipFromAddress1, UpdateSourceTrigger=PropertyChanged}" />
+                    <ui:TextBlock Text="Address line 2 (optional)" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ui:TextBox MaxLength="{x:Static coremodels:UpsAddressLimits.AddressLineMaxLength}"
+                             Text="{Binding DefaultShipFromAddress2, UpdateSourceTrigger=PropertyChanged}" />
+                    <ui:TextBlock Text="City" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ui:TextBox MaxLength="{x:Static coremodels:UpsAddressLimits.CityMaxLength}"
+                             Text="{Binding DefaultShipFromCity, UpdateSourceTrigger=PropertyChanged}" />
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Margin="0,0,10,0">
+                            <ui:TextBlock Text="State" Style="{StaticResource FieldLabelTextStyle}" />
+                            <ui:TextBox Width="90" MaxLength="{x:Static coremodels:UpsAddressLimits.StateProvinceCodeMaxLength}"
+                                     Text="{Binding DefaultShipFromState, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,10,0">
+                            <ui:TextBlock Text="Postal code" Style="{StaticResource FieldLabelTextStyle}" />
+                            <ui:TextBox Width="110" MaxLength="{x:Static coremodels:UpsAddressLimits.PostalCodeMaxLength}"
+                                     Text="{Binding DefaultShipFromPostalCode, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel>
+                            <ui:TextBlock Text="Country" Style="{StaticResource FieldLabelTextStyle}" />
+                            <ui:TextBox Width="90" MaxLength="{x:Static coremodels:UpsAddressLimits.CountryCodeLength}"
+                                     Text="{Binding DefaultShipFromCountryCode, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                    </StackPanel>
+                    <ui:TextBlock Text="Phone (optional)" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ui:TextBox MaxLength="{x:Static coremodels:UpsAddressLimits.PhoneNumberMaxLength}"
+                             Text="{Binding DefaultShipFromPhoneNumber, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+            </ui:Card>
+
+            <ui:Card Padding="{StaticResource ContentCardPadding}" Margin="{StaticResource ContentCardMargin}">
+                <StackPanel>
+                    <ui:TextBlock Text="Shipping Defaults" Style="{StaticResource SectionHeaderTextStyle}" Margin="0" />
+                    <ui:TextBlock Text="Box size presets" Style="{StaticResource FieldLabelTextStyle}" />
+                    <TextBlock Text="Quick-fill sizes on each package row. The first one is the starting size for new rows."
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                    <Grid Margin="0,0,0,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="56" />
+                            <ColumnDefinition Width="56" />
+                            <ColumnDefinition Width="56" />
+                            <ColumnDefinition Width="68" />
+                            <ColumnDefinition Width="36" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Name" FontWeight="SemiBold" />
+                        <TextBlock Grid.Column="1" Text="L (in)" FontWeight="SemiBold" />
+                        <TextBlock Grid.Column="2" Text="W (in)" FontWeight="SemiBold" />
+                        <TextBlock Grid.Column="3" Text="H (in)" FontWeight="SemiBold" />
+                        <TextBlock Grid.Column="4" Text="Weight (lbs)" FontWeight="SemiBold" />
+                    </Grid>
+                    <ItemsControl ItemsSource="{Binding BoxPresets}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="56" />
+                                        <ColumnDefinition Width="56" />
+                                        <ColumnDefinition Width="56" />
+                                        <ColumnDefinition Width="68" />
+                                        <ColumnDefinition Width="36" />
+                                    </Grid.ColumnDefinitions>
+                                    <ui:TextBox Grid.Column="0" Width="Auto" HorizontalAlignment="Stretch" Margin="0,0,4,0"
+                                             Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                                    <ui:TextBox Grid.Column="1" Width="Auto" HorizontalAlignment="Stretch" Margin="0,0,4,0"
+                                             Text="{Binding LengthIn, UpdateSourceTrigger=PropertyChanged}" />
+                                    <ui:TextBox Grid.Column="2" Width="Auto" HorizontalAlignment="Stretch" Margin="0,0,4,0"
+                                             Text="{Binding WidthIn, UpdateSourceTrigger=PropertyChanged}" />
+                                    <ui:TextBox Grid.Column="3" Width="Auto" HorizontalAlignment="Stretch" Margin="0,0,4,0"
+                                             Text="{Binding HeightIn, UpdateSourceTrigger=PropertyChanged}" />
+                                    <ui:TextBox Grid.Column="4" Width="Auto" HorizontalAlignment="Stretch" Margin="0,0,4,0"
+                                             Text="{Binding WeightLbs, UpdateSourceTrigger=PropertyChanged}" />
+                                    <ui:Button Grid.Column="5" Icon="{ui:SymbolIcon Dismiss24}" Appearance="Transparent" Padding="6" HorizontalAlignment="Right"
+                                               ToolTip="Remove box size"
+                                               Command="{Binding DataContext.RemoveBoxPresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                               CommandParameter="{Binding}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <ui:Button Content="Add Box Size" Appearance="Secondary" Command="{Binding AddBoxPresetCommand}" Style="{StaticResource ActionButton}" />
+
+                    <ui:TextBlock Text="Invoice shipping markup (%)" Style="{StaticResource FieldLabelTextStyle}" Margin="0,16,0,2" />
+                    <ui:NumberBox Width="120" HorizontalAlignment="Left" Minimum="0" ClearButtonEnabled="False"
+                                  Value="{Binding ShippingFeeMarkupPercent, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Text="&quot;Add Shipping Cost To Invoice&quot; on a UPS shipment charges the negotiated rate plus this percent — or UPS's published rate, when that's picked on the shipment and is higher."
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,2,0,0" />
+                </StackPanel>
+            </ui:Card>
+
+            <ui:Card Padding="{StaticResource ContentCardPadding}" Margin="{StaticResource ContentCardMargin}">
+                <StackPanel>
+                    <ui:TextBlock Text="Shipment History" Style="{StaticResource SectionHeaderTextStyle}" Margin="0" />
+                    <TextBlock Text="Every N weeks, completed shipments (Purchased or Voided) older than N weeks are exported to a local JSON file and permanently removed from Shipment History. Draft/quoted/error shipments are never auto-archived."
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                    <ui:TextBlock Text="Archive every (weeks)" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ui:NumberBox Width="120" HorizontalAlignment="Left" Minimum="1" ClearButtonEnabled="False" Value="{Binding ShipmentArchiveIntervalWeeks, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8" />
+                    <StackPanel Orientation="Horizontal">
+                        <ui:Button Content="Run Archive Now" Appearance="Secondary" Command="{Binding RunArchiveNowCommand}" Style="{StaticResource ActionButton}" />
+                        <ui:Button Content="Open Archive Folder" Appearance="Secondary" Command="{Binding OpenArchiveFolderCommand}" Style="{StaticResource ActionButton}" Margin="8,0,0,0" />
+                        <ui:Button Content="View Archives" Appearance="Secondary" Command="{Binding OpenArchiveViewerCommand}" Style="{StaticResource ActionButton}" Margin="8,0,0,0" />
+                    </StackPanel>
+                </StackPanel>
+            </ui:Card>
+
+            <ui:Card Padding="{StaticResource ContentCardPadding}" Margin="{StaticResource ContentCardMargin}">
+                <StackPanel>
+                    <ui:TextBlock Text="Label Printer" Style="{StaticResource SectionHeaderTextStyle}" Margin="0" />
+                    <ui:TextBlock Text="Windows printer" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ComboBox Width="320" Padding="6,4" HorizontalAlignment="Left" ItemsSource="{Binding AvailablePrinters}" SelectedItem="{Binding SelectedPrinterName}" />
+                    <ui:TextBlock Text="Label paper" Style="{StaticResource FieldLabelTextStyle}" />
+                    <ComboBox Width="320" Padding="6,4" HorizontalAlignment="Left" ItemsSource="{Binding LabelPaperModes}" SelectedItem="{Binding LabelPaperMode}" />
+                    <TextBlock Text="4x6in: a dedicated thermal/label printer loaded with 4x6 label stock. 8.5x11in (centered): a regular office printer loaded with standard letter paper — the label prints at true size in the middle of the sheet."
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,2,0,8" />
+                    <ui:Button Content="Print Test Label" Appearance="Secondary" Command="{Binding PrintTestLabelCommand}" Style="{StaticResource ActionButton}" />
+
+                    <ui:TextBlock Text="Box label logo" Style="{StaticResource FieldLabelTextStyle}" Margin="0,16,0,2" />
+                    <Border Width="180" Height="90" HorizontalAlignment="Left" Background="White" BorderThickness="1" CornerRadius="4" Padding="6"
+                            BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}">
+                        <Grid>
+                            <Image Source="{Binding ShopLogoPreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" />
+                            <TextBlock Text="No logo — the company name prints instead" Foreground="Gray" FontSize="11" TextWrapping="Wrap" TextAlignment="Center"
+                                       VerticalAlignment="Center" Visibility="{Binding ShopLogoPreview, Converter={StaticResource InverseNullToVisConverter}}" />
+                        </Grid>
+                    </Border>
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <ui:Button Content="Choose Logo..." Appearance="Secondary" Command="{Binding ChooseShopLogoCommand}" Style="{StaticResource ActionButton}" />
+                        <ui:Button Content="Remove" Appearance="Secondary" Command="{Binding RemoveShopLogoCommand}" Style="{StaticResource ActionButton}" Margin="8,0,0,0" />
+                    </StackPanel>
+                    <TextBlock Text="Printed on pick-up box labels for orders without a Printavo contractor profile (contractor orders use that contractor's logo from Printavo). High-contrast black &amp; white works best on thermal labels."
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,6,0,0" />
+                </StackPanel>
+            </ui:Card>
+
+            <ui:Card Padding="12" Margin="0,8,0,0">
+                <StackPanel Orientation="Horizontal">
+                    <ui:Button Content="Save Settings" Appearance="Primary" Command="{Binding SaveCommand}" Padding="16,8" FontWeight="Bold" />
+                    <TextBlock Text="Working..." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontStyle="Italic" VerticalAlignment="Center" Margin="16,0,0,0"
+                               Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisConverter}}" />
+                    <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource SystemFillColorCriticalBrush}" VerticalAlignment="Center" Margin="16,0,0,0" TextWrapping="Wrap"
+                               Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisConverter}}" />
+                    <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource SystemFillColorSuccessBrush}" VerticalAlignment="Center" Margin="16,0,0,0" TextWrapping="Wrap"
+                               Visibility="{Binding StatusMessage, Converter={StaticResource StringToVisConverter}}" />
+                </StackPanel>
+            </ui:Card>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

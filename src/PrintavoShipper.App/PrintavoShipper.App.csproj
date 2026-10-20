@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\PrintavoShipper.Core\PrintavoShipper.Core.csproj" />
+    <ProjectReference Include="..\PrintavoShipper.Printavo\PrintavoShipper.Printavo.csproj" />
+    <ProjectReference Include="..\PrintavoShipper.Ups\PrintavoShipper.Ups.csproj" />
+    <ProjectReference Include="..\PrintavoShipper.FedEx\PrintavoShipper.FedEx.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+    <PackageReference Include="Emoji.Wpf" Version="0.3.4" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.13.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageReference Include="WPF-UI" Version="4.3.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Resources\AppIcon.ico</ApplicationIcon>
+    <!-- Shown as the exe's description (e.g. Task Manager) and product name. -->
+    <AssemblyTitle>Printavo Shipper</AssemblyTitle>
+    <Product>Printavo Shipper</Product>
+    <!-- English-only app: skip the ~13 localized satellite-resource folders
+         WPF/WinForms would otherwise copy into every build and publish. -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\AppIcon.ico" />
+    <Resource Include="Resources\AppIcon.png" />
+  </ItemGroup>
+
+</Project>

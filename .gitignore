@@ -1,0 +1,27 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+
+## Rider/VS
+.vs/
+.idea/
+*.userosscache
+*.sln.docstates
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+## Test results
+TestResults/
+
+## Publish output (see publish.ps1) — the built single-file exe is a
+## release artifact, not source; distribute it directly, don't commit it.
+publish/
+
+## Local developer/AI-assistant notes — kept on this machine only.
+CLAUDE.md
