@@ -1,20 +1,60 @@
-# Printavo Shipper
+# Printavo Shipper: UPS and FedEx Shipping Label Integration for Printavo
 
-A Windows desktop app that turns a completed [Printavo](https://www.printavo.com/) order into a
-printed UPS or FedEx shipping label, and writes the tracking number and cost back to Printavo.
+**Printavo Shipper** is a free, open-source Windows app that connects [Printavo](https://www.printavo.com/)
+to **UPS** and **FedEx**. Open a Printavo order, compare carrier rates, buy and print the shipping
+label, and the tracking number and shipping cost are written back to the Printavo order on their own.
+It was built at a screen-printing shop for print and apparel shops that use Printavo and ship orders
+on their own UPS or FedEx accounts.
 
-- Opens Printavo orders and ships to the order's address (or any of its additional addresses).
-- Rates and buys labels through the UPS and FedEx APIs, billing your own account or a customer's
-  third-party account.
-- Prints labels to a 4x6 label printer or plain letter paper, and prints numbered box labels for
-  pick-up orders.
-- Writes back to Printavo: tracking in the customer note, a task recording the shipping cost, an
-  optional Shipping line on the invoice, and the order's status.
-- Keeps a local shipment history with reprint, void, and retry-sync.
+**[Download the latest release (Windows .exe)](https://github.com/BenExtreme/printavo-shipper/releases/latest)**:
+one file, no installer, nothing else to install.
 
-Everything specific to a shop — Printavo statuses and staff, delivery method names, box sizes,
-ship-from address, carrier accounts — is configured on the app's Settings screen. See
+> Printavo Shipper is an independent project. It is not made, endorsed, or supported by Printavo,
+> UPS, or FedEx. It uses their public APIs with your own account credentials.
+
+## Features
+
+- **Printavo integration**: look up any Printavo order and ship to its address or to any of its
+  additional addresses. Works with the Printavo GraphQL API.
+- **UPS shipping labels**: rate and buy labels through the official UPS API. Services include UPS
+  Ground, 3 Day Select, 2nd Day Air, Next Day Air, and Next Day Air Saver. Optional UPS email
+  tracking notifications (Quantum View) go to your customer.
+- **FedEx shipping labels**: rate and buy labels through the FedEx Ship API. Services include FedEx
+  Ground, Home Delivery, Express Saver, 2Day, and Standard and Priority Overnight.
+- **Address validation** through UPS and FedEx before you buy a label.
+- **Multi-box shipments**, with box-size presets for your common carton sizes.
+- **Third-party billing**: bill your own carrier account or the customer's UPS or FedEx account.
+  Useful for contract printing, where each contract customer pays its own shipping.
+- **Tracking written back to Printavo**: the tracking number goes in the customer note, the shipping
+  cost is recorded as a task, an optional Shipping line (with markup) can be added to the invoice,
+  and the order status is updated.
+- **Label printing**: 4x6 thermal label printers (Zebra, Rollo, and others with a Windows driver) or
+  plain letter paper on an office printer.
+- **Pick-up box labels**: numbered box labels for local pick-up orders, with your shop logo or the
+  contractor's logo.
+- **Shipment history**: reprint, void, and retry the Printavo sync on past shipments.
+
+Everything specific to a shop, such as Printavo statuses and staff, delivery method names, box sizes,
+ship-from address, and carrier accounts, is set up on the app's Settings screen. See
 [docs/StaffRunbook.pdf](docs/StaffRunbook.pdf) for setup and day-to-day use.
+
+## FAQ
+
+**Does Printavo integrate with UPS or FedEx?**
+Printavo Shipper adds that link. It reads orders from your Printavo account, buys UPS or FedEx labels
+on your own carrier account, and writes the tracking number back to the order. You don't need a
+third-party shipping platform or a monthly subscription.
+
+**Does it cost anything?**
+The app is free and open source (GPL-3.0). You pay UPS or FedEx for the labels you buy, at your own
+account's rates.
+
+**Which printers does it support?**
+Any printer with a Windows driver, including 4x6 thermal label printers. See
+[Labels and printers](#labels-and-printers).
+
+**Does it work on Mac?**
+No. It's a Windows app (Windows 11, x64).
 
 ## Requirements
 
@@ -39,7 +79,7 @@ ship-from address, carrier accounts — is configured on the app's Settings scre
   - optionally, a project on the [FedEx Developer Portal](https://developer.fedex.com/) and your own
     FedEx account number.
 
-## Build and run
+## Build from source
 
 ```powershell
 git clone https://github.com/BenExtreme/printavo-shipper.git
