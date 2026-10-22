@@ -109,13 +109,21 @@ public class AppSettings
     public bool ShippingCostTaskToOrderOwner { get; set; }
 
     /// <summary>Printavo deliveryMethod.name values (matched case-insensitively) that ship via UPS.</summary>
-    public List<string> UpsDeliveryMethodNames { get; set; } = new() { "UPS", "Shipping" };
+    /// <remarks>No generic name like "Shipping" by default — those fall through to DefaultCarrier, so a FedEx-only shop isn't sent to UPS out of the box.</remarks>
+    public List<string> UpsDeliveryMethodNames { get; set; } = new() { "UPS" };
 
     /// <summary>Printavo deliveryMethod.name values that ship via FedEx.</summary>
     public List<string> FedExDeliveryMethodNames { get; set; } = new() { "FedEx" };
 
     /// <summary>Printavo deliveryMethod.name values that are picked up — box labels instead of shipping labels.</summary>
     public List<string> PickupDeliveryMethodNames { get; set; } = new() { "Pick-up" };
+
+    /// <summary>
+    /// Carrier for an order whose delivery method matches none of the lists
+    /// above (with a warning), and the New Shipment screen's preselected
+    /// carrier. Lets a FedEx-only shop never see a UPS card by default.
+    /// </summary>
+    public ShipmentCarrier DefaultCarrier { get; set; } = ShipmentCarrier.Ups;
 
     // ---- Shipping defaults (Settings > Shipping Defaults) ----
 

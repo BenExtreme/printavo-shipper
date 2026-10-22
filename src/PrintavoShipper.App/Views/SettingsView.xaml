@@ -92,8 +92,17 @@
                     </Border>
 
                     <ui:TextBlock Text="Delivery methods" Style="{StaticResource FieldLabelTextStyle}" Margin="0,16,0,2" />
-                    <TextBlock Text="Printavo delivery method names, comma-separated (not case-sensitive). An order with a name not listed here ships via UPS, with a warning."
+                    <TextBlock Text="Printavo delivery method names, comma-separated (not case-sensitive). An order with a name not listed here ships via the default carrier below, with a warning."
                                Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,0,0,2" />
+                    <ui:TextBlock Text="Default carrier" Style="{StaticResource FieldLabelTextStyle}" />
+                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                        <RadioButton Content="UPS" GroupName="SettingsDefaultCarrier" Margin="0,0,20,0" VerticalAlignment="Center"
+                                     IsChecked="{Binding DefaultCarrier, Converter={StaticResource CarrierToBoolConverter}, ConverterParameter=Ups}" />
+                        <RadioButton Content="FedEx" GroupName="SettingsDefaultCarrier" VerticalAlignment="Center"
+                                     IsChecked="{Binding DefaultCarrier, Converter={StaticResource CarrierToBoolConverter}, ConverterParameter=FedEx}" />
+                    </StackPanel>
+                    <TextBlock Text="Used for unlisted delivery methods, and preselected on the New Shipment screen."
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,2,0,0" />
                     <ui:TextBlock Text="Ship via UPS" Style="{StaticResource FieldLabelTextStyle}" />
                     <ui:TextBox Text="{Binding UpsDeliveryMethodNames, UpdateSourceTrigger=PropertyChanged}" />
                     <ui:TextBlock Text="Ship via FedEx" Style="{StaticResource FieldLabelTextStyle}" />

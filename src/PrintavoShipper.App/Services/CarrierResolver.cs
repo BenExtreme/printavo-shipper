@@ -6,8 +6,9 @@ namespace PrintavoShipper.App.Services;
 /// Maps a Printavo order's deliveryMethod.name to how it leaves the shop,
 /// using the delivery method names configured in Settings > Printavo
 /// Workflow (matched case-insensitively). Anything unlisted (null,
-/// unrecognized future value) falls back to UPS rather than blocking shipping
-/// outright, but callers should surface WasUnrecognized to staff (see
+/// unrecognized future value) falls back to the shop's default carrier
+/// (Settings > Printavo Workflow) rather than blocking shipping outright, but
+/// callers should surface WasUnrecognized to staff (see
 /// OrderDetailViewModel.ShowUnrecognizedDeliveryMethodWarning) so a real data
 /// problem in Printavo doesn't silently ship on the wrong carrier.
 /// </summary>
@@ -21,7 +22,7 @@ public static class CarrierResolver
         var name = deliveryMethodName?.Trim();
         if (Matches(name, settings.PickupDeliveryMethodNames))
         {
-            return new Resolution(ShipmentCarrier.Ups, IsPickup: true, WasUnrecognized: false);
+            return new Resolution(settings.DefaultCarrier, IsPickup: true, WasUnrecognized: false);
         }
 
         if (Matches(name, settings.FedExDeliveryMethodNames))
@@ -29,7 +30,12 @@ public static class CarrierResolver
             return new Resolution(ShipmentCarrier.FedEx, IsPickup: false, WasUnrecognized: false);
         }
 
-        return new Resolution(ShipmentCarrier.Ups, IsPickup: false, WasUnrecognized: !Matches(name, settings.UpsDeliveryMethodNames));
+        if (Matches(name, settings.UpsDeliveryMethodNames))
+        {
+            return new Resolution(ShipmentCarrier.Ups, IsPickup: false, WasUnrecognized: false);
+        }
+
+        return new Resolution(settings.DefaultCarrier, IsPickup: false, WasUnrecognized: true);
     }
 
     private static bool Matches(string? name, IEnumerable<string> configured) =>

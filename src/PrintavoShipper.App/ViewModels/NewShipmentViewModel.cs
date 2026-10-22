@@ -45,6 +45,9 @@ public partial class NewShipmentViewModel : ObservableObject
     private ContractorShipFromAddress _defaultShipFrom = new();
     private Contractor? _linkedContractor;
 
+    /// <summary>Settings' DefaultCarrier as last applied to SelectedCarrier — re-applied only when Settings changes it, so a carrier staff picked by hand survives navigating away and back.</summary>
+    private ShipmentCarrier? _appliedDefaultCarrier;
+
     [ObservableProperty]
     private bool isInitializing;
 
@@ -158,6 +161,12 @@ public partial class NewShipmentViewModel : ObservableObject
             _ownAccounts = await _upsAccountRepository.GetAllAsync();
             _ownFedExAccounts = await _fedExAccountRepository.GetAllAsync();
             var settings = await _settingsService.GetSettingsAsync();
+
+            if (settings.DefaultCarrier != _appliedDefaultCarrier)
+            {
+                SelectedCarrier = settings.DefaultCarrier;
+                _appliedDefaultCarrier = settings.DefaultCarrier;
+            }
 
             _defaultShipFrom = new ContractorShipFromAddress
             {

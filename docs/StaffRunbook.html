@@ -178,19 +178,20 @@
         <span class="btn">Test Printavo Connection</span> — it shows who you're signed in as.</td>
   </tr>
   <tr>
-    <td><strong>UPS</strong></td>
-    <td>The Client ID and Client Secret from your app on the UPS Developer Portal. Leave
+    <td><strong>UPS</strong> (if you ship UPS)</td>
+    <td>Only needed if you ship UPS — a FedEx-only shop leaves this and Our UPS Accounts blank. The
+        Client ID and Client Secret from your app on the UPS Developer Portal. Leave
         <span class="label">Environment</span> on <span class="label">Cie</span> (UPS's test system — labels
         aren't real and cost nothing) until you're ready, then switch to
         <span class="label">Production</span>. Click <span class="btn">Test UPS Connection</span>.</td>
   </tr>
   <tr>
     <td><strong>Our UPS Accounts</strong></td>
-    <td>Add at least one of your own UPS account numbers (with its zip). Mark one as Default. If you add
-        several, <span class="btn">Get Rates</span> compares them all.</td>
+    <td>If you ship UPS, add at least one of your own UPS account numbers (with its zip). Mark one as
+        Default. If you add several, <span class="btn">Get Rates</span> compares them all.</td>
   </tr>
   <tr>
-    <td><strong>FedEx</strong> (optional)</td>
+    <td><strong>FedEx</strong> (if you ship FedEx)</td>
     <td>Only needed if you ship FedEx. The Client ID and Client Secret from your FedEx Developer Portal
         project, the account number tied to that project, and the environment
         (<span class="label">Sandbox</span> for testing, then <span class="label">Production</span>). Click
@@ -220,8 +221,10 @@
             set on shipped orders, <em>Pick-up</em> for pick-up orders, and <em>Hide</em> for statuses that
             should never appear in the Orders list (quotes, already shipped, on hold…).</li>
         <li><strong>Delivery methods</strong> — your Printavo delivery method names, comma-separated, for
-            each of UPS, FedEx, and Pick-up. An order whose delivery method isn't listed ships via UPS
-            with a warning.</li>
+            each of UPS, FedEx, and Pick-up.</li>
+        <li><strong>Default carrier</strong> — UPS or FedEx. An order whose delivery method isn't listed
+            ships via this carrier with a warning, and it's preselected on the New Shipment screen. A
+            FedEx-only shop should pick FedEx.</li>
         <li><strong>Staff</strong> — tick the people who should appear in the order screen's
             <em>Add Task</em> list and the UPS <em>also notify on delivery</em> list. Their email starts as
             their Printavo login; change it if they read a different inbox, or clear it to leave them out
@@ -519,7 +522,8 @@
   <tr>
     <td>"Unrecognized delivery method"</td>
     <td>The order's Printavo delivery method isn't in Settings &rarr; Printavo Workflow &rarr; Delivery
-        methods, so it's defaulting to UPS. Fix the order in Printavo, or add the name in Settings.</td>
+        methods, so it's using the default carrier (Settings &rarr; Printavo Workflow &rarr; Default
+        carrier). Fix the order in Printavo, or add the name in Settings.</td>
   </tr>
   <tr>
     <td>The status picker or Add Task list is empty</td>

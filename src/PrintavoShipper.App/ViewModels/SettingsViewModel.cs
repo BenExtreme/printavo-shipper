@@ -190,6 +190,9 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private string pickupDeliveryMethodNames = string.Empty;
 
+    [ObservableProperty]
+    private ShipmentCarrier defaultCarrier;
+
     // ---- Shipping Defaults ----
 
     [ObservableProperty]
@@ -288,6 +291,7 @@ public partial class SettingsViewModel : ObservableObject
         UpsDeliveryMethodNames = string.Join(", ", _settings.UpsDeliveryMethodNames);
         FedExDeliveryMethodNames = string.Join(", ", _settings.FedExDeliveryMethodNames);
         PickupDeliveryMethodNames = string.Join(", ", _settings.PickupDeliveryMethodNames);
+        DefaultCarrier = _settings.DefaultCarrier;
         BoxPresets = new ObservableCollection<BoxPresetRow>(_settings.BoxSizePresets.Select(p => new BoxPresetRow
         {
             Name = p.Name,
@@ -554,6 +558,7 @@ public partial class SettingsViewModel : ObservableObject
             _settings.UpsDeliveryMethodNames = SplitNames(UpsDeliveryMethodNames);
             _settings.FedExDeliveryMethodNames = SplitNames(FedExDeliveryMethodNames);
             _settings.PickupDeliveryMethodNames = SplitNames(PickupDeliveryMethodNames);
+            _settings.DefaultCarrier = DefaultCarrier;
             _settings.BoxSizePresets = boxPresets
                 .Select(p => new BoxSizePreset(p.Name.Trim(), p.LengthIn, p.WidthIn, p.HeightIn, p.WeightLbs))
                 .ToList();

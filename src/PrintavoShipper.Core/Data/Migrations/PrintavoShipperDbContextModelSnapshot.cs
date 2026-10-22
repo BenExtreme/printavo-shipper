@@ -27,6 +27,9 @@ namespace PrintavoShipper.Core.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("DefaultCarrier")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("DefaultShipFromAddress1")
                         .IsRequired()
                         .HasMaxLength(35)

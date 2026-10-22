@@ -62,9 +62,13 @@ public partial class OrderDetailViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<object> shipmentCards = new();
 
-    /// <summary>True when this order's Printavo delivery method isn't one of the names configured in Settings > Printavo Workflow — the order still ships via UPS, but staff should notice and double-check the Printavo order.</summary>
+    /// <summary>True when this order's Printavo delivery method isn't one of the names configured in Settings > Printavo Workflow — the order still ships via the default carrier, but staff should notice and double-check the Printavo order.</summary>
     [ObservableProperty]
     private bool showUnrecognizedDeliveryMethodWarning;
+
+    /// <summary>"UPS"/"FedEx" — what an unrecognized delivery method falls back to, for the warning text.</summary>
+    [ObservableProperty]
+    private string defaultCarrierName = "UPS";
 
     [ObservableProperty]
     private string? deliveryMethodName;
@@ -193,6 +197,7 @@ public partial class OrderDetailViewModel : ObservableObject
             _carrier = delivery.Carrier;
             DeliveryMethodName = Order.DeliveryMethodName;
             ShowUnrecognizedDeliveryMethodWarning = delivery.WasUnrecognized;
+            DefaultCarrierName = settings.DefaultCarrier == ShipmentCarrier.FedEx ? "FedEx" : "UPS";
             IsPickup = delivery.IsPickup;
             ShopName = string.IsNullOrWhiteSpace(settings.DefaultShipFromCompanyName) ? "the shop's default address" : settings.DefaultShipFromCompanyName;
             ShowShipFromNotConfiguredWarning = !IsPickup && !settings.IsDefaultShipFromConfigured;

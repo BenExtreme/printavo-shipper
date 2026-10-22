@@ -77,7 +77,8 @@
                         <TextBlock TextWrapping="Wrap">
                             <Run Text="Unrecognized delivery method" FontWeight="Bold" />
                             <Run Text="{Binding DeliveryMethodName, StringFormat=' &quot;{0}&quot;', Mode=OneWay}" />
-                            <Run Text=" — defaulting to UPS shipping. Double-check this order's delivery method in Printavo if that's not right, or add the name under Settings &gt; Printavo Workflow &gt; Delivery methods." />
+                            <Run Text="{Binding DefaultCarrierName, StringFormat=' — defaulting to {0} shipping.', Mode=OneWay}" />
+                            <Run Text="Double-check this order's delivery method in Printavo if that's not right, or add the name under Settings &gt; Printavo Workflow &gt; Delivery methods." />
                         </TextBlock>
                     </ui:Card>
 

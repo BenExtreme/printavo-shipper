@@ -59,9 +59,9 @@ No. It's a Windows app (Windows 11, x64).
 ## Requirements
 
 > **Bring your own carrier API keys.** The app doesn't include any UPS or FedEx credentials. Each
-> shop needs its own free developer account with UPS (and with FedEx, if it ships FedEx), creates an
-> app or project there to get its own Client ID and Client Secret, and links its own shipping account
-> number to it. New keys start in the carriers' test environments (UPS *CIE*, FedEx *Sandbox*);
+> shop needs its own free developer account with each carrier it ships with (UPS, FedEx, or both),
+> creates an app or project there to get its own Client ID and Client Secret, and links its own
+> shipping account number to it. New keys start in the carriers' test environments (UPS *CIE*, FedEx *Sandbox*);
 > moving to live shipping may require extra approval steps on the carrier's side.
 >
 > **FedEx label certification:** to get a FedEx developer project approved for live shipping, you
@@ -74,10 +74,11 @@ No. It's a Windows app (Windows 11, x64).
   needs nothing installed.
 - To actually ship:
   - a Printavo account with API access (login email + API token);
-  - an app on the [UPS Developer Portal](https://developer.ups.com/) (Client ID/Secret) and your own
-    UPS account number;
-  - optionally, a project on the [FedEx Developer Portal](https://developer.fedex.com/) and your own
-    FedEx account number.
+  - for each carrier you ship with — UPS, FedEx, or both; neither is required on its own:
+    - UPS: an app on the [UPS Developer Portal](https://developer.ups.com/) (Client ID/Secret) and
+      your own UPS account number;
+    - FedEx: a project on the [FedEx Developer Portal](https://developer.fedex.com/) and your own
+      FedEx account number.
 
 ## Build from source
 
@@ -106,11 +107,13 @@ On first launch the app creates its database and starts with empty settings. Ope
 fill in, at minimum:
 
 1. **Printavo** — login email and API token, then *Test Printavo Connection*.
-2. **UPS** (and/or **FedEx**) — API credentials, with the environment on *Cie* / *Sandbox* while
-   testing; then at least one of your own accounts under **Our UPS Accounts** / **Our FedEx
-   Accounts**. The carriers require your own account as the shipper even for third-party billing.
-3. **Printavo Workflow** — which of your Printavo statuses to use, your delivery method names, and
-   your staff.
+2. **UPS** and/or **FedEx** — only the carriers you actually use. API credentials, with the
+   environment on *Cie* / *Sandbox* while testing; then at least one of your own accounts under
+   **Our UPS Accounts** / **Our FedEx Accounts**. The carriers require your own account as the
+   shipper even for third-party billing. A FedEx-only shop can leave the UPS cards blank.
+3. **Printavo Workflow** — which of your Printavo statuses to use, your delivery method names, your
+   **default carrier** (used for any delivery method not listed, and preselected on New Shipment —
+   pick FedEx if you don't use UPS), and your staff.
 4. **Default Ship-From Address** and **Label Printer**.
 
 Use the carriers' test environments (UPS *Cie*, FedEx *Sandbox*) until everything works — Production
